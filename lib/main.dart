@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:calendar_timeline/calendar_timeline.dart';
+import "package:flutter_localizations/flutter_localizations.dart";
+import 'calendar.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,7 +16,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Text("his"),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('ko', 'KR'),  
+        const Locale('en', 'US')  
+      ],
+      home: Calendar(),
     );
   }
 }

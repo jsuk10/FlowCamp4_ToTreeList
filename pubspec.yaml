@@ -11,6 +11,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  calendar_timeline: ^0.7.1
 
   cupertino_icons: ^1.0.2
 
