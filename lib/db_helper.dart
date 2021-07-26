@@ -25,6 +25,7 @@ class DBHelper {
 
   initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    print("DDDDDDDDDDDDDDDDDDDDDDDDDD" + documentsDirectory.toString());
     String path = join(documentsDirectory.path, 'MyDogsDB.db');
 
     return await openDatabase(
@@ -48,6 +49,7 @@ class DBHelper {
 
   //Read
   getDog(int id) async {
+    print("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEEEEEEEEEEEETTTTTTTTTTTT");
     final db = await database;
     var res = await db!.rawQuery('SELECT * FROM $tableName WHERE id = ?', [id]);
     if (res.isNotEmpty) {
@@ -59,6 +61,7 @@ class DBHelper {
 
   //Read All
   Future<List<Dog>> getAllDogs() async {
+    print("GGGGGGGEEEEEEEETAAAAAAAAAAALLLLLLLLLLLLLLL");
     final db = await database;
     var res = await db!.rawQuery('SELECT * FROM $tableName');
     List<Dog> list = res.isNotEmpty ? res.map((c) => Dog(id:c['id'], name:c['name'])).toList() : [];
@@ -70,6 +73,7 @@ class DBHelper {
   deleteDog(int id) async {
     final db = await database;
     var res = db!.rawDelete('DELETE FROM $tableName WHERE id = ?', [id]);
+    //print("ididididididididididididid" + id.toString());
     return res;
   }
 

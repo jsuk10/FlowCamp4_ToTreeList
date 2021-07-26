@@ -75,13 +75,14 @@ class _MyHomePageState extends State<MyHomePage> {
         floatingActionButton: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            FloatingActionButton(
+            /**FloatingActionButton(
               child: Icon(Icons.refresh),
               onPressed: () {
                 DBHelper().deleteAllDogs();
                 setState(() {});
               },
             ),
+            */
             SizedBox(height: 8.0),
             FloatingActionButton(
               child: Icon(Icons.add),
@@ -93,7 +94,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         )
-
     );
   }
 }
