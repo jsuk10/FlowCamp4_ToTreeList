@@ -53,57 +53,57 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget addButton() {
     final myController = TextEditingController();
-    return ListTile(
-      title: Text(
-        "투두 더하기",
-        textScaleFactor: 1.5,
-      ),
-      trailing: Icon(Icons.add),
-      onTap: () {
-        showDialog(
-            context: context,
-            barrierDismissible: true,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                //Dialog Main Title
-                title: new Text("Todo 추가"),
-                content: Container(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      new TextField(
-                        controller: myController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'ToDO',
-                        ),
+    return Container(
+        child: ListTile(
+          title: Text(
+            "투두 더하기",
+            textScaleFactor: 1,
+          ),
+          trailing: Icon(Icons.add),
+          onTap: () {
+            showDialog(
+                context: context,
+                barrierDismissible: true,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0)),
+                    //Dialog Main Title
+                    title: new Text("Todo 추가"),
+                    content: Container(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          new TextField(
+                            controller: myController,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'ToDO',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: <Widget>[
+                      new FlatButton(
+                        child: new Text("추가"),
+                        onPressed: () {
+                          var todo = new Todo(
+                              name: myController.text,
+                              date: getNowDate(DateTime.now()));
+                          if (todo.name != "") DBHelper().createData(todo);
+                          Navigator.pop(context);
+                          setState(() {});
+                          print(todo.name);
+                        },
                       ),
                     ],
-                  ),
-                ),
-                actions: <Widget>[
-                  new FlatButton(
-                    child: new Text("추가"),
-                    onPressed: () {
-                      var todo = new Todo(
-                          name: myController.text,
-                          date: getNowDate(DateTime.now()));
-                      if(todo.name != "")
-                        DBHelper().createData(todo);
-                      Navigator.pop(context);
-                      setState(() {});
-                      print(todo.name);
-                    },
-                  ),
-                ],
-              );
-            });
-      },
-    );
+                  );
+                });
+          },
+        ));
   }
 
   Widget _buildRow(List<Todo> saved, Todo todo) {
@@ -116,9 +116,9 @@ class _MyHomePageState extends State<MyHomePage> {
       child: ListTile(
         title: Text(
           todo.toString(),
-          textScaleFactor: 1.5,
+          textScaleFactor: 1,
         ),
-        trailing: Icon(!alreadySaved ? Icons.favorite_border : Icons.favorite,
+          leading: Icon(!alreadySaved ? Icons.favorite_border : Icons.favorite,
             color: Colors.pink),
         //길게 클릭시
         onLongPress: () => FlutterDialog(todo),
