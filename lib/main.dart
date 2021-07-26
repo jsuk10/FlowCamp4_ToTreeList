@@ -8,13 +8,9 @@ import 'package:my_app/db_helper.dart';
 import 'package:my_app/models/todo_model.dart';
 import 'dart:math';
 
-List<Dog> dogs = [
-  Dog(name: '푸들이', id: null),
-  Dog(name: '삽살이', id: null),
-  Dog(name: '말티말티', id: null),
-  Dog(name: '강돌이', id: null),
-  Dog(name: '진져', id: null),
-  Dog(name: '백구', id: null),
+List<Todo> todos = [
+  Todo(name: '물마시기', id: null, date: '2021', state: 0),
+  Todo(name: '공부하기', id: null, date: '2021', state: 0),
 ];
 
 void main() => runApp(MyApp());
@@ -22,13 +18,12 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: RandomWords());
-    // return MaterialApp(
-    //   theme: ThemeData(
-    //     primarySwatch: Colors.blue,
-    //   ),
-    //   home: MyHomePage(title: 'Dog Database'),
-    // );
+    return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(title: 'Todo Database'),
+    );
   }
 }
 
@@ -49,17 +44,18 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(widget.title),
         ),
         body: FutureBuilder(
-          future: DBHelper().getAllDogs(),
-          builder: (BuildContext context, AsyncSnapshot<List<Dog>> snapshot) {
+          future: DBHelper().getAllTodos(),
+          builder: (BuildContext context, AsyncSnapshot<List<Todo>> snapshot) {
             if (snapshot.hasData) {
               return ListView.builder(
                 itemCount: snapshot.data!.length,
                 itemBuilder: (BuildContext context, int index) {
-                  Dog item = snapshot.data![index];
+                  Todo item = snapshot.data![index];
+                  print("IIIIIIIIIIIIIIIIIIIIITEM" + item.name.toString());
                   return Dismissible(
                     key: UniqueKey(),
                     onDismissed: (direction) {
-                      DBHelper().deleteDog(item.id);
+                      DBHelper().deleteTodo(item.id);
                       setState(() {});
                     },
                     child: Center(child: Text(item.name)),
@@ -88,8 +84,8 @@ class _MyHomePageState extends State<MyHomePage> {
             FloatingActionButton(
               child: Icon(Icons.add),
               onPressed: () {
-                Dog dog = dogs[Random().nextInt(dogs.length)];
-                DBHelper().createData(dog);
+                Todo todo = todos[Random().nextInt(todos.length)];
+                DBHelper().createData(todo);
                 setState(() {});
               },
             ),

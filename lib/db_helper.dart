@@ -6,7 +6,7 @@ import 'package:path/path.dart';
 
 import 'package:my_app/models/todo_model.dart';
 
-final String tableName = 'Dog';
+final String tableName = 'Todo';
 
 class DBHelper {
 
@@ -33,7 +33,7 @@ class DBHelper {
         version: 1,
         onCreate: (db, version) async {
           await db.execute(
-            "CREATE TABLE $tableName(id INTEGER PRIMARY KEY, name TEXT)",
+            "CREATE TABLE $tableName(id INTEGER PRIMARY KEY, name TEXT, date TEXT, state INTEGER)",
           );
         },
         onUpgrade: (db, oldVersion, newVersion){}
@@ -41,36 +41,36 @@ class DBHelper {
   }
 
   //Create
-  createData(Dog dog) async {
+  createData(Todo todo) async {
     final db = await database;
-    var res = await db!.rawInsert('INSERT INTO $tableName(name) VALUES(?)', [dog.name]);
+    var res = await db!.rawInsert('INSERT INTO $tableName(name) VALUES(?)', [todo.name]);
     return res;
   }
 
   //Read
-  getDog(int id) async {
+  getTodo(int id) async {
     print("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGEEEEEEEEEEEEETTTTTTTTTTTT");
     final db = await database;
     var res = await db!.rawQuery('SELECT * FROM $tableName WHERE id = ?', [id]);
     if (res.isNotEmpty) {
-      return Dog(id: res.first['id'], name: res.first['name']);
+      return Todo(id: res.first['id'], name: res.first['name'], date:res.first['date'], state:res.first['state']);
     } else {
       return Null;
     }
   }
 
   //Read All
-  Future<List<Dog>> getAllDogs() async {
+  Future<List<Todo>> getAllTodos() async {
     print("GGGGGGGEEEEEEEETAAAAAAAAAAALLLLLLLLLLLLLLL");
     final db = await database;
     var res = await db!.rawQuery('SELECT * FROM $tableName');
-    List<Dog> list = res.isNotEmpty ? res.map((c) => Dog(id:c['id'], name:c['name'])).toList() : [];
+    List<Todo> list = res.isNotEmpty ? res.map((c) => Todo(id:c['id'], name:c['name'], date:c['date'], state:c['state'])).toList() : [];
 
     return list;
   }
 
   //Delete
-  deleteDog(int id) async {
+  deleteTodo(int id) async {
     final db = await database;
     var res = db!.rawDelete('DELETE FROM $tableName WHERE id = ?', [id]);
     //print("ididididididididididididid" + id.toString());
@@ -78,7 +78,7 @@ class DBHelper {
   }
 
   //Delete All
-  deleteAllDogs() async {
+  deleteAllTodos() async {
     final db = await database;
     db!.rawDelete('DELETE FROM $tableName');
   }
