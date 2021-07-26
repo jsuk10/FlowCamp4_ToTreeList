@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:calendar_timeline/calendar_timeline.dart';
 import "package:flutter_localizations/flutter_localizations.dart";
+import 'package:transition/transition.dart';
 import 'calendar.dart';
+import 'calender.dart';
 import 'src/RandomWord.dart';
 import 'package:intl/intl.dart';
 
@@ -110,12 +112,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () {
                       var todo = new Todo(
                           name: myController.text,
-                          id: null,
-                          date: '2021',
-                          state: 0);
+                          date: getNowDate(DateTime.now()));
                       DBHelper().createData(todo);
                       Navigator.pop(context);
                       setState(() {});
+                      print(getNowDate(DateTime.now()));
                     },
                   ),
                 ],
@@ -201,4 +202,10 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         });
   }
+}
+
+
+///현재 날짜를 입력해서 정해진 형식을 뽑아옴
+String getNowDate(DateTime now){
+  return now.year.toString() + now.month.toString() + now.day.toString();
 }
