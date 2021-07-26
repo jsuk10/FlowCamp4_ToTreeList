@@ -59,6 +59,14 @@ class DBHelper {
     }
   }
 
+  Future<List<Todo>> getDayTodos(String date) async{
+    final db = await database;
+    var res = await db!.rawQuery('SELECT * FROM $tableName WHERE date = ?', [date]);
+    List<Todo> list = res.isNotEmpty ? res.map((c) => Todo(id:c['id'], name:c['name'], date:c['date'], state:c['state'])).toList() : [];
+
+    return list;
+  }
+
   //Read All
   Future<List<Todo>> getAllTodos() async {
     print("GGGGGGGEEEEEEEETAAAAAAAAAAALLLLLLLLLLLLLLL");

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:my_app/db_helper.dart';
 import 'package:my_app/models/todo_model.dart';
@@ -9,8 +10,8 @@ import 'package:transition/transition.dart';
 
 
 List<Todo> todos = [
-  Todo(name: '물마시기', id: null, date: '2021', state: 0),
-  Todo(name: '공부하기', id: null, date: '2021', state: 0),
+  Todo(name: '물마시기', id: null, date: (DateTime.now().year.toString() + DateTime.now().month.toString() + DateTime.now().day.toString()).toString(), state: 0),
+  Todo(name: '공부하기', id: null, date: (DateTime.now().year.toString() + DateTime.now().month.toString() + DateTime.now().day.toString()).toString(), state: 0),
 ];
 
 void main() => runApp(MyApp());
@@ -64,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemCount: snapshot.data!.length,
                 itemBuilder: (BuildContext context, int index) {
                   Todo item = snapshot.data![index];
+                  print("DDDSATEEEEEEEEEEEE" + (DateTime.now().year.toString() + DateTime.now().month.toString() + DateTime.now().day.toString()).toString());
                   print("IIIIIIIIIIIIIIIIIIIIITEM" + item.name.toString());
                   return Dismissible(
                     key: UniqueKey(),
@@ -86,14 +88,6 @@ class _MyHomePageState extends State<MyHomePage> {
         floatingActionButton: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            /**FloatingActionButton(
-              child: Icon(Icons.refresh),
-              onPressed: () {
-                DBHelper().deleteAllDogs();
-                setState(() {});
-              },
-            ),
-            */
             SizedBox(height: 8.0),
             FloatingActionButton(
               child: Icon(Icons.add),
