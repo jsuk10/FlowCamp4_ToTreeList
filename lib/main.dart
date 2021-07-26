@@ -4,6 +4,9 @@ import 'package:my_app/db_helper.dart';
 import 'package:my_app/models/todo_model.dart';
 import 'dart:math';
 
+import 'calender.dart';
+import 'package:transition/transition.dart';
+
 
 List<Todo> todos = [
   Todo(name: '물마시기', id: null, date: '2021', state: 0),
@@ -40,7 +43,18 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
+          actions: <Widget>[
+            IconButton(
+            icon: Icon(Icons.list),
+            onPressed: () {
+                    Navigator.push(context, Transition(
+                      child: CalendarScreen(title: 'calendar'),
+                      transitionEffect: TransitionEffect.TOP_TO_BOTTOM
+                      )
+                    );
+            },
         ),
+        ]),
         body: FutureBuilder(
           future: DBHelper().getAllTodos(),
           builder: (BuildContext context, AsyncSnapshot<List<Todo>> snapshot) {

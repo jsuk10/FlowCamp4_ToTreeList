@@ -82,4 +82,11 @@ class DBHelper {
     final db = await database;
     db!.rawDelete('DELETE FROM $tableName');
   }
+
+  //Update
+  updateTodo(Todo todo) async {
+    final db = await database;
+    var res = db!.rawUpdate('UPDATE $tableName SET name = ? WHERE = ?', [todo.name, todo.id]);
+    return res;
+  }
 }
