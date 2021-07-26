@@ -5,4 +5,7 @@ class Todo {
   final dynamic state;
 
   Todo({required this.id, required this.name, required this.date, required this.state});
+
+  @override
+  toString() => name;
 }

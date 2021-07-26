@@ -13,6 +13,8 @@ List<Todo> todos = [
   Todo(name: '공부하기', id: null, date: '2021', state: 0),
 ];
 
+// void main() => runApp(RandomWords());
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -22,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Todo Database'),
+      home: RandomWords(),
     );
   }
 }
