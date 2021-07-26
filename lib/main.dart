@@ -6,12 +6,8 @@ import 'dart:math';
 
 
 List<Todo> todos = [
-  Todo(name: '푸들이', id: null, date: '2021', state: 0),
-  Todo(name: '삽살이', id: null, date: '2021', state: 0),
-  Todo(name: '말티말티', id: null, date: '2021', state: 0),
-  Todo(name: '강돌이', id: null, date: '2021', state: 0),
-  Todo(name: '진져', id: null, date: '2021', state: 0),
-  Todo(name: '백구', id: null, date: '2021', state: 0),
+  Todo(name: '물마시기', id: null, date: '2021', state: 0),
+  Todo(name: '공부하기', id: null, date: '2021', state: 0),
 ];
 
 void main() => runApp(MyApp());

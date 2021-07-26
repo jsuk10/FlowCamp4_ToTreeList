@@ -6,7 +6,7 @@ import 'package:path/path.dart';
 
 import 'package:my_app/models/todo_model.dart';
 
-final String tableName = 'Dog';
+final String tableName = 'Todo';
 
 class DBHelper {
 
