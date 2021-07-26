@@ -3,6 +3,7 @@ import 'package:calendar_timeline/calendar_timeline.dart';
 import "package:flutter_localizations/flutter_localizations.dart";
 import 'calendar.dart';
 import 'src/RandomWord.dart';
+import 'package:intl/intl.dart';
 
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:my_app/db_helper.dart';
@@ -35,9 +36,18 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text(widget.title), actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.list),
+          onPressed: () {
+            Navigator.push(
+                context,
+                Transition(
+                    child: CalendarScreen(title: 'calendar'),
+                    transitionEffect: TransitionEffect.TOP_TO_BOTTOM));
+          },
+        ),
+      ]),
       body: FutureBuilder(
         future: DBHelper().getAllTodos(),
         builder: (BuildContext context, AsyncSnapshot<List<Todo>> snapshot) {
@@ -98,7 +108,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   new FlatButton(
                     child: new Text("추가"),
                     onPressed: () {
-                      var todo = new Todo(name: myController.text, id: null, date: '2021', state: 0);
+                      var todo = new Todo(
+                          name: myController.text,
+                          id: null,
+                          date: '2021',
+                          state: 0);
                       DBHelper().createData(todo);
                       Navigator.pop(context);
                       setState(() {});

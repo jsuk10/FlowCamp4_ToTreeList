@@ -78,6 +78,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
+  date_format:
+    dependency: "direct main"
+    description:
+      name: date_format
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.9"
   english_words:
     dependency: "direct dev"
     description:
@@ -329,6 +336,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.6"
+  transition:
+    dependency: "direct main"
+    description:
+      name: transition
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
   typed_data:
     dependency: transitive
     description:
