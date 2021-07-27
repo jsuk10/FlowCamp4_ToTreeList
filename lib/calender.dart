@@ -7,9 +7,10 @@ import 'package:my_app/main.dart';
 import 'models/todo_model.dart';
 
 class CalendarScreen extends StatefulWidget {
-  CalendarScreen({Key? key, required this.title}) : super(key: key);
+  CalendarScreen({Key? key, required this.title, required this.donePer}) : super(key: key);
 
   final String title;
+  final double donePer;
 
   @override
   State<StatefulWidget> createState() {
@@ -61,7 +62,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  void _handleNewDate(date) {
+  Future<void> _handleNewDate(date) async {
+    var gotPer = await DBHelper().getPer(getNowDate(DateTime.now()));
+    print("PERCENT" + gotPer.toString());
     print('Date selected: $date');
   }
 
@@ -77,4 +80,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
     });
     return map;
   }
+}
+
+String getNowDate(DateTime now) {
+  return now.year.toString() + now.month.toString() + now.day.toString();
 }

@@ -4,7 +4,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter/material.dart';
 import '../calender.dart';
 import '../db_helper.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -15,6 +14,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  var itemCnt = 0;
+  var donePer = 0.0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +27,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.push(
                 context,
                 Transition(
-                    child: CalendarScreen(title: 'calendar'),
+                    child: CalendarScreen(title: 'calendar', donePer: donePer),
                     transitionEffect: TransitionEffect.TOP_TO_BOTTOM));
           },
         ),
@@ -34,6 +36,13 @@ class _MyHomePageState extends State<MyHomePage> {
         future: DBHelper().getAllTodos(),
         builder: (BuildContext context, AsyncSnapshot<List<Todo>> snapshot) {
           if (snapshot.hasData) {
+            print("HASDATA");
+            itemCnt = snapshot.data!.length;
+            print("ITTTTTTEM" + itemCnt.toString());
+            if (itemCnt==0){
+              DBHelper().createPer(getNowDate(DateTime.now()));
+            }
+            print("SNNNNNNNNNNNNNAP" + snapshot.toString());
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (BuildContext context, int index) {
@@ -77,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () => Navigator.push(
                   context,
                   Transition(
-                      child: CalendarScreen(title: 'calendar'),
+                      child: CalendarScreen(title: 'calendar', donePer: donePer),
                       transitionEffect: TransitionEffect.TOP_TO_BOTTOM)),
             ),
           ],
@@ -100,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
-  void addButtonAction() {
+  Future<void> addButtonAction() async {
     final myController = TextEditingController();
 
     showDialog(
@@ -131,14 +140,19 @@ class _MyHomePageState extends State<MyHomePage> {
             actions: <Widget>[
               new FlatButton(
                 child: new Text("추가"),
-                onPressed: () {
+                onPressed: () async {
                   var todo = new Todo(
                       name: myController.text,
+                      state: 0,
                       date: getNowDate(DateTime.now()));
                   if (todo.name != "") DBHelper().createData(todo);
                   Navigator.pop(context);
                   setState(() {});
                   print(todo.name);
+                  //await DBHelper().updatePer(DateTime.now().year.toString() + DateTime.now().month.toString() + DateTime.now().day.toString(), doneData);
+                  //var per = await DBHelper().getPer(DateTime.now().year.toString() + DateTime.now().month.toString() + DateTime.now().day.toString());
+                  //print("ADDDDDDDDDDDD" + per);
+
                 },
               ),
             ],
@@ -166,11 +180,17 @@ class _MyHomePageState extends State<MyHomePage> {
             //길게 클릭시
             onLongPress: () => FlutterDialog(todo),
             //짥게 클릭시
-            onTap: () {
+            onTap: () async {
               if (todo.state == null) todo.state = 0;
               todo.state = todo.state == 0 ? 1 : 0;
               DBHelper().updateTodoState(todo);
               setState(() {});
+              var doneData = await DBHelper().getDayTodos(getNowDate(DateTime.now()));
+              donePer = doneData / itemCnt;
+              print("DONEDATA" + donePer.toString());
+              await DBHelper().updatePer(getNowDate(DateTime.now()), donePer);
+              var gotPer = await DBHelper().getPer(getNowDate(DateTime.now()));
+              print("PERCENT" + gotPer.toString());
             },
           )),
       //오른쪽 슬라이드

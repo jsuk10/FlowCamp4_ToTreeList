@@ -7,6 +7,7 @@ import 'package:path/path.dart';
 import 'package:my_app/models/todo_model.dart';
 
 final String tableName = 'Todo';
+final String perTableName = 'Per';
 
 class DBHelper {
 
@@ -17,6 +18,7 @@ class DBHelper {
   static Database? _database;
 
   Future<Database?> get database async {
+    print("DDDDDDDDDDATABASE");
     if(_database != null) return _database;
 
     _database = await initDB();
@@ -24,8 +26,11 @@ class DBHelper {
   }
 
   initDB() async {
+    print("INIIIIIIIIIIT)");
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    print(documentsDirectory.toString());
     String path = join(documentsDirectory.path, 'MyDogsDB.db');
+    print("PPPPPPPPPPPPPATH" + path.toString());
 
     return await openDatabase(
         path,
@@ -34,15 +39,44 @@ class DBHelper {
           await db.execute(
             "CREATE TABLE $tableName(id INTEGER PRIMARY KEY, name TEXT, date TEXT, state INTEGER)",
           );
+          await db.execute(
+            "CREATE TABLE $perTableName(date TEXT PRIMARY KEY, per DOUBLE)",
+          );
         },
         onUpgrade: (db, oldVersion, newVersion){}
     );
   }
 
+  showTable() async {
+    final db = await database;
+    List result = await db!.rawQuery("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'android_%'");
+    print(result);
+  }
+
+  createPer(String date) async{
+    final db = await database;
+    var res = await db!.rawInsert('INSERT INTO $perTableName(date, per) VALUES(?, ?)', [date, 0]);
+    return res;
+  }
+
+  updatePer(String date, double per) async {
+    final db = await database;
+    var res = db!.rawUpdate('UPDATE $perTableName SET per = ? WHERE date = ?', [per, date]);
+    return res;
+  }
+
+  getPer(String date) async{
+    final db = await database;
+    var res = await db!.rawQuery('Select * FROM $perTableName WHERE date = ?', [date]);
+    if (res.isNotEmpty){
+      return res.first['per'];
+    }
+  }
+
   //Create
   createData(Todo todo) async {
     final db = await database;
-    var res = await db!.rawInsert('INSERT INTO $tableName(name) VALUES(?)', [todo.name]);
+    var res = await db!.rawInsert('INSERT INTO $tableName(name, date, state) VALUES(?, ?, ?)', [todo.name, todo.date, todo.state]);
     return res;
   }
 
@@ -57,12 +91,14 @@ class DBHelper {
     }
   }
 
-  Future<List<Todo>> getDayTodos(String date) async{
+  getDayTodos(String date) async{
     final db = await database;
-    var res = await db!.rawQuery('SELECT * FROM $tableName WHERE date = ?', [date]);
+    var res = await db!.rawQuery('SELECT * FROM $tableName WHERE date = ? and state = ?', [date, 1]);
     List<Todo> list = res.isNotEmpty ? res.map((c) => Todo(id:c['id'], name:c['name'], date:c['date'], state:c['state'])).toList() : [];
 
-    return list;
+    print(list.length);
+
+    return list.length;
   }
 
   //Read All
