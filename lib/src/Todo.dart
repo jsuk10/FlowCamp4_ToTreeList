@@ -21,6 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(title: Text(widget.title), actions: <Widget>[
         IconButton(
           icon: Icon(Icons.list),
@@ -113,8 +114,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 borderRadius: BorderRadius.circular(10.0)),
             //Dialog Main Title
             title: new Text("Todo 추가"),
-            content: Container(
-              child: Column(
+            content: ListView(children: <Widget>[
+              Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -127,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ),
-            ),
+            ]),
             actions: <Widget>[
               new FlatButton(
                 child: new Text("추가"),
@@ -228,11 +229,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   controller: myController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'ToDO',
+                    labelText: todo.name,
                   ),
                 ),
-                SizedBox(
-                  height: 230,
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.25,
                   child: new MaterialPicker(
                       pickerColor: pickerColor,
                       onColorChanged: (Color color) =>
@@ -252,8 +253,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: pickerColor,
                           child: new Text("Change"),
                           onPressed: () {
-                            if(myController.text!="")
-                            todo.name = myController.text;
+                            if (myController.text != "")
+                              todo.name = myController.text;
                             todo.color = pickerColor.toString();
                             DBHelper().updateTodoName(todo);
                             Navigator.pop(context);
@@ -279,50 +280,50 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     final myController = TextEditingController();
+    print("dia");
     slideDialog.showSlideDialog(
-      context: context,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          new TextField(
-            controller: myController,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'EnterToDO',
-            ),
-          ),
-          SizedBox(
-            height: 235,
-            child: new MaterialPicker(
-                pickerColor: pickerColor,
-                onColorChanged: (Color color) =>
-                    setState(() => changeColor(color))),
-          ),
-          new StreamBuilder(
-              stream: stream,
-              builder: (context, snapshot) {
-                return Center(
-                  child: new FlatButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                          side: BorderSide(color: Colors.white)),
-                      color: pickerColor,
-                      child: new Text("Add Todo"),
-                      onPressed: () {
-                        var todo = new Todo(
-                            name: myController.text,
-                            date: getNowDate(DateTime.now()),
-                            color: pickerColor.toString());
-                        if (todo.name != "") DBHelper().createData(todo);
-                        Navigator.pop(context);
-                        setState(() {});
-                      }),
-                );
-              })
-        ],
-      ),
-    );
+        barrierColor: Colors.white.withOpacity(0.7),
+        context: context,
+        child: SingleChildScrollView(
+            child: Column(mainAxisSize: MainAxisSize.max,
+                // crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+              TextField(
+                controller: myController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'ToDO',
+                ),
+              ),
+              Container(
+                height: MediaQuery.of(context).size.height * 0.4,
+                child: new MaterialPicker(
+                    pickerColor: pickerColor,
+                    onColorChanged: (Color color) =>
+                        setState(() => changeColor(color))),
+              ),
+              StreamBuilder(
+                  stream: stream,
+                  builder: (context, snapshot) {
+                    return Center(
+                      child: new FlatButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18.0),
+                              side: BorderSide(color: Colors.white)),
+                          color: pickerColor,
+                          child: new Text("Add Todo"),
+                          onPressed: () {
+                            var todo = new Todo(
+                                name: myController.text,
+                                date: getNowDate(DateTime.now()),
+                                color: pickerColor.toString());
+                            if (todo.name != "") DBHelper().createData(todo);
+                            Navigator.pop(context);
+                            setState(() {});
+                          }),
+                    );
+                  })
+            ])));
   }
 }
 
@@ -331,8 +332,9 @@ String getNowDate(DateTime now) {
   return now.year.toString() + now.month.toString() + now.day.toString();
 }
 
-Color stringtoColor(Todo todo){
-  String valueString = todo.color?.split('(0x')[1].split(')')[0]; // kind of hacky..
+Color stringtoColor(Todo todo) {
+  String valueString =
+      todo.color?.split('(0x')[1].split(')')[0]; // kind of hacky..
   int value = int.parse(valueString, radix: 16);
   return new Color(value);
 }
