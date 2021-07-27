@@ -18,7 +18,6 @@ class DBHelper {
   static Database? _database;
 
   Future<Database?> get database async {
-    print("DDDDDDDDDDATABASE");
     if(_database != null) return _database;
 
     _database = await initDB();
@@ -55,7 +54,7 @@ class DBHelper {
 
   createPer(String date) async{
     final db = await database;
-    var res = await db!.rawInsert('INSERT INTO $perTableName(date, per) VALUES(?, ?)', [date, 0]);
+    var res = await db!.rawInsert('INSERT OR REPLACE INTO $perTableName(date, per) VALUES(?, ?)', [date, 0]);
     return res;
   }
 
@@ -73,12 +72,18 @@ class DBHelper {
     }
   }
 
+  deleteAllPer() async {
+    final db = await database;
+    db!.rawDelete('DELETE FROM $perTableName');
+  }
+
   //Create
   createData(Todo todo) async {
     final db = await database;
     var res = await db!.rawInsert('INSERT INTO $tableName(name, date, state) VALUES(?, ?, ?)', [todo.name, todo.date, todo.state]);
     return res;
   }
+
 
   //Read
   getTodo(int id) async {

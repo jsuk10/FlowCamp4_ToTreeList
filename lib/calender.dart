@@ -7,28 +7,29 @@ import 'package:my_app/main.dart';
 import 'models/todo_model.dart';
 
 class CalendarScreen extends StatefulWidget {
-  CalendarScreen({Key? key, required this.title, required this.donePer}) : super(key: key);
+  CalendarScreen({Key? key, required this.title, required this.donePer, required this.events}) : super(key: key);
 
   final String title;
   final double donePer;
+  final Map<DateTime, double> events;
 
   @override
   State<StatefulWidget> createState() {
-    return _CalendarScreenState();
+    return _CalendarScreenState(events);
   }
 }
 
 //여기서 todo data 보여줌
 class _CalendarScreenState extends State<CalendarScreen> {
-  List<Todo> _list = <Todo>[];
-  Map<DateTime, List<CleanCalendarEvent>> _events = {
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day): [
-      CleanCalendarEvent('Event A', isDone: false)
-    ],
-  };
+  Map<DateTime, double> _events = {};
+
+  _CalendarScreenState(Map<DateTime, double> events){
+    this._events = events;
+  }
 
   @override
   void initState() {
+    print("EVENTS!!" + this._events.toString());
     super.initState();
     // Force selection of today on first load, so that the list of today's events gets shown.
     _handleNewDate(DateTime(
@@ -66,19 +67,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     var gotPer = await DBHelper().getPer(getNowDate(DateTime.now()));
     print("PERCENT" + gotPer.toString());
     print('Date selected: $date');
-  }
-
-  Map<DateTime, List<CleanCalendarEvent>> getListToMap(List<Todo> list){
-    Map<DateTime, List<CleanCalendarEvent>> map = new Map<DateTime, List<CleanCalendarEvent>>();
-    list.forEach((x) {
-      CleanCalendarEvent event = CleanCalendarEvent(
-          x.name, isDone: x.state == 1 ? true : false);
-      List<CleanCalendarEvent>? list = map[x.date] == null ? <
-          CleanCalendarEvent>[] : map[x.date];
-      list!.add(event);
-      map[x.date] = list;
-    });
-    return map;
   }
 }
 

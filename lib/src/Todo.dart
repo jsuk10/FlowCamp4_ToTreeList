@@ -16,6 +16,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var itemCnt = 0;
   var donePer = 0.0;
+  Map<DateTime, double> events  = {};
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.push(
                 context,
                 Transition(
-                    child: CalendarScreen(title: 'calendar', donePer: donePer),
+                    child: CalendarScreen(title: 'calendar', donePer: donePer, events: events),
                     transitionEffect: TransitionEffect.TOP_TO_BOTTOM));
           },
         ),
@@ -36,13 +37,12 @@ class _MyHomePageState extends State<MyHomePage> {
         future: DBHelper().getAllTodos(),
         builder: (BuildContext context, AsyncSnapshot<List<Todo>> snapshot) {
           if (snapshot.hasData) {
-            print("HASDATA");
             itemCnt = snapshot.data!.length;
-            print("ITTTTTTEM" + itemCnt.toString());
             if (itemCnt==0){
               DBHelper().createPer(getNowDate(DateTime.now()));
+              events[DateTime(
+                  DateTime.now().year, DateTime.now().month, DateTime.now().day)] = 0;
             }
-            print("SNNNNNNNNNNNNNAP" + snapshot.toString());
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (BuildContext context, int index) {
@@ -86,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () => Navigator.push(
                   context,
                   Transition(
-                      child: CalendarScreen(title: 'calendar', donePer: donePer),
+                      child: CalendarScreen(title: 'calendar', donePer: donePer, events: events),
                       transitionEffect: TransitionEffect.TOP_TO_BOTTOM)),
             ),
           ],
@@ -191,6 +191,8 @@ class _MyHomePageState extends State<MyHomePage> {
               await DBHelper().updatePer(getNowDate(DateTime.now()), donePer);
               var gotPer = await DBHelper().getPer(getNowDate(DateTime.now()));
               print("PERCENT" + gotPer.toString());
+              events[DateTime(
+                  DateTime.now().year, DateTime.now().month, DateTime.now().day)] = donePer;
             },
           )),
       //오른쪽 슬라이드

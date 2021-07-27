@@ -32,7 +32,7 @@ class CalendarTile extends StatelessWidget {
   final bool isDayOfWeek;
   final bool isSelected;
   final bool inMonth;
-  final List<CleanCalendarEvent>? events;
+  final double events;
   final TextStyle? dayOfWeekStyle;
   final TextStyle? dateStyles;
   final Widget? child;
@@ -51,7 +51,7 @@ class CalendarTile extends StatelessWidget {
     this.isDayOfWeek: false,
     this.isSelected: false,
     this.inMonth: true,
-    this.events,
+    required this.events,
     this.selectedColor,
     this.todayColor,
     this.eventColor,
@@ -116,37 +116,6 @@ class CalendarTile extends StatelessWidget {
                           .grey), // Grey color for previous or next months dates
                 ),
                 // Dots for the events
-                events != null && events!.length > 0
-                    ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: events!.map((event) {
-                      eventCount++;
-                      // Show a maximum of 3 dots.
-                      if (eventCount > 3) return Container();
-                      return Container(
-                        margin: EdgeInsets.only(
-                            left: 2.0, right: 2.0, top: 1.0),
-                        width: 5.0,
-                        height: 5.0,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            // If event is done (isDone == true) set the color of the dots to
-                            // the eventDoneColor (if given) otherwise use the primary color of
-                            // the theme
-                            // If the event is now donw yet, we use the given eventColor or the
-                            // color property of the CleanCalendarEvent. If both aren't set, then
-                            // the accent color of the theme get used.
-                            color: (() {
-                              if (event.isDone)
-                                return eventDoneColor ??
-                                    Theme.of(context).primaryColor;
-                              if (isSelected) return Colors.white;
-                              return eventColor ??
-                                  Theme.of(context).accentColor;
-                            }())),
-                      );
-                    }).toList())
-                    : Container(),
               ],
             ),
           ),
