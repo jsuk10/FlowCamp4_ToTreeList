@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter/material.dart';
 import '../calender.dart';
 import '../db_helper.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -34,11 +35,11 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (BuildContext context, AsyncSnapshot<List<Todo>> snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
-              itemCount: snapshot.data!.length + 1,
+              itemCount: snapshot.data!.length,
               itemBuilder: (BuildContext context, int index) {
-                if (index == snapshot.data!.length) return addButton();
+                // if (index == snapshot.data!.length) return addButton();
                 Todo item = snapshot.data![index];
-                return _buildRow(snapshot.data!, item);
+                return _buildRow(item);
               },
             );
           } else {
@@ -48,87 +49,130 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.black,
+        child: const Icon(Icons.add),
+        onPressed: () => addButtonAction(),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: new BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        color: Color.fromRGBO(104, 65, 50, 1),
+        child: new Row(
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+              onPressed: () => addButtonAction(),
+            ),
+            new Expanded(child: new SizedBox()),
+            IconButton(
+              icon: Icon(
+                Icons.menu,
+                color: Colors.white,
+              ),
+              onPressed: () => Navigator.push(
+                  context,
+                  Transition(
+                      child: CalendarScreen(title: 'calendar'),
+                      transitionEffect: TransitionEffect.TOP_TO_BOTTOM)),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget addButton() {
-    final myController = TextEditingController();
     return Container(
         child: ListTile(
-          title: Text(
-            "투두 더하기",
-            textScaleFactor: 1,
-          ),
-          trailing: Icon(Icons.add),
-          onTap: () {
-            showDialog(
-                context: context,
-                barrierDismissible: true,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0)),
-                    //Dialog Main Title
-                    title: new Text("Todo 추가"),
-                    content: Container(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          new TextField(
-                            controller: myController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'ToDO',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    actions: <Widget>[
-                      new FlatButton(
-                        child: new Text("추가"),
-                        onPressed: () {
-                          var todo = new Todo(
-                              name: myController.text,
-                              date: getNowDate(DateTime.now()));
-                          if (todo.name != "") DBHelper().createData(todo);
-                          Navigator.pop(context);
-                          setState(() {});
-                          print(todo.name);
-                        },
-                      ),
-                    ],
-                  );
-                });
-          },
-        ));
+            title: Text(
+              "투두 더하기",
+              textScaleFactor: 1,
+            ),
+            trailing: Icon(Icons.add),
+            onTap: () => addButtonAction(),
+        )
+    );
   }
 
-  Widget _buildRow(List<Todo> saved, Todo todo) {
-    final bool alreadySaved = !saved.contains(todo);
+
+  void addButtonAction() {
+    final myController = TextEditingController();
+
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            //Dialog Main Title
+            title: new Text("Todo 추가"),
+            content: Container(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  new TextField(
+                    controller: myController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'ToDO',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("추가"),
+                onPressed: () {
+                  var todo = new Todo(
+                      name: myController.text,
+                      date: getNowDate(DateTime.now()));
+                  if (todo.name != "") DBHelper().createData(todo);
+                  Navigator.pop(context);
+                  setState(() {});
+                  print(todo.name);
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  Widget _buildRow(Todo todo) {
+    final bool alreadySaved = todo.state == 1;
 
     //슬라이드가 가능한 버튼
     return Slidable(
       actionPane: SlidableDrawerActionPane(),
       actionExtentRatio: 0.25,
-      child: ListTile(
-        title: Text(
-          todo.toString(),
-          textScaleFactor: 1,
-        ),
-          leading: Icon(!alreadySaved ? Icons.favorite_border : Icons.favorite,
-            color: Colors.pink),
-        //길게 클릭시
-        onLongPress: () => FlutterDialog(todo),
-        //짥게 클릭시
-        onTap: () {
-          todo.state = todo.state == 0 ? 1 : 0;
-          print(todo.state);
-          DBHelper().updateTodo(todo);
-        },
-      ),
+      child: Card(
+          margin: EdgeInsets.fromLTRB(8, 4, 8, 4),
+          child: ListTile(
+            title: Text(
+              todo.toString(),
+              textScaleFactor: 1,
+            ),
+            leading: Icon(
+                !alreadySaved ? Icons.favorite_border : Icons.favorite,
+                color: Colors.pink),
+            //길게 클릭시
+            onLongPress: () => FlutterDialog(todo),
+            //짥게 클릭시
+            onTap: () {
+              if (todo.state == null) todo.state = 0;
+              todo.state = todo.state == 0 ? 1 : 0;
+              DBHelper().updateTodoState(todo);
+              setState(() {});
+            },
+          )),
       //오른쪽 슬라이드
       // actions: <Widget>[]
       //왼쪽 슬라이드
@@ -181,7 +225,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   todo.name = myController.text;
                   print(todo.name);
                   if (todo.name != "") {
-                    DBHelper().updateTodo(todo);
+                    DBHelper().updateTodoName(todo);
                     setState(() {});
                   }
                   Navigator.pop(context);

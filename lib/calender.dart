@@ -4,6 +4,8 @@ import 'package:my_app/calendars/clean_calendar_event.dart';
 import 'package:my_app/db_helper.dart';
 import 'package:my_app/main.dart';
 
+import 'models/todo_model.dart';
+
 class CalendarScreen extends StatefulWidget {
   CalendarScreen({Key? key, required this.title}) : super(key: key);
 
@@ -17,9 +19,10 @@ class CalendarScreen extends StatefulWidget {
 
 //여기서 todo data 보여줌
 class _CalendarScreenState extends State<CalendarScreen> {
-  final Map<DateTime, List<CleanCalendarEvent>> _events = {
+  List<Todo> _list = <Todo>[];
+  Map<DateTime, List<CleanCalendarEvent>> _events = {
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day): [
-      CleanCalendarEvent('Event A', isDone: true)
+      CleanCalendarEvent('Event A', isDone: false)
     ],
   };
 
@@ -60,5 +63,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   void _handleNewDate(date) {
     print('Date selected: $date');
+  }
+
+  Map<DateTime, List<CleanCalendarEvent>> getListToMap(List<Todo> list){
+    Map<DateTime, List<CleanCalendarEvent>> map = new Map<DateTime, List<CleanCalendarEvent>>();
+    list.forEach((x) {
+      CleanCalendarEvent event = CleanCalendarEvent(
+          x.name, isDone: x.state == 1 ? true : false);
+      List<CleanCalendarEvent>? list = map[x.date] == null ? <
+          CleanCalendarEvent>[] : map[x.date];
+      list!.add(event);
+      map[x.date] = list;
+    });
+    return map;
   }
 }

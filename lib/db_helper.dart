@@ -88,9 +88,15 @@ class DBHelper {
   }
 
   //Update
-  updateTodo(Todo todo) async {
+  updateTodoName(Todo todo) async {
     final db = await database;
-    var res = db!.rawUpdate('UPDATE $tableName SET name = ? WHERE = ?', [todo.name, todo.id]);
+    var res = db!.rawUpdate('UPDATE $tableName SET name = ? WHERE id = ?', [todo.name, todo.id]);
+    return res;
+  }
+
+  updateTodoState(Todo todo) async {
+    final db = await database;
+    var res = db!.rawUpdate('UPDATE $tableName SET state = ? WHERE id = ?', [todo.state, todo.id]);
     return res;
   }
 }
