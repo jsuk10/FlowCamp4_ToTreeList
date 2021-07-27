@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:my_app/models/todo_model.dart';
 import 'package:transition/transition.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -5,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../calender.dart';
 import '../db_helper.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -52,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         child: const Icon(Icons.add),
-        onPressed: () => addButtonAction(),
+        onPressed: () => SliderDialog(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: new BottomAppBar(
@@ -89,20 +92,17 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget addButton() {
     return Container(
         child: ListTile(
-            title: Text(
-              "투두 더하기",
-              textScaleFactor: 1,
-            ),
-            trailing: Icon(Icons.add),
-            onTap: () => addButtonAction(),
-        )
-    );
+      title: Text(
+        "투두 더하기",
+        textScaleFactor: 1,
+      ),
+      trailing: Icon(Icons.add),
+      onTap: () => addButtonAction(),
+    ));
   }
-
 
   void addButtonAction() {
     final myController = TextEditingController();
-
     showDialog(
         context: context,
         barrierDismissible: true,
@@ -148,6 +148,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildRow(Todo todo) {
     final bool alreadySaved = todo.state == 1;
+    Color color = todo.color == null ? Colors.blue : todo.color as Color;
+
+    print('${color} + ${todo.name}');
 
     //슬라이드가 가능한 버튼
     return Slidable(
@@ -155,6 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
       actionExtentRatio: 0.25,
       child: Card(
           margin: EdgeInsets.fromLTRB(8, 4, 8, 4),
+          color: color,
           child: ListTile(
             title: Text(
               todo.toString(),
@@ -180,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
         IconSlideAction(
             caption: 'Delete',
             color: Colors.red,
-            icon: Icons.delete,
+            icon: Icons.delete_rounded,
             onTap: () {
               DBHelper().deleteTodo(todo.id);
               setState(() {});
@@ -223,7 +227,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: new Text("바꾸기"),
                 onPressed: () {
                   todo.name = myController.text;
-                  print(todo.name);
                   if (todo.name != "") {
                     DBHelper().updateTodoName(todo);
                     setState(() {});
@@ -235,9 +238,73 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         });
   }
+
+  void SliderDialog() {
+    Color pickerColor = Colors.lightGreen;
+    StreamController<Color> controller = StreamController<Color>();
+    Stream<Color> stream = controller.stream;
+
+    void changeColor(Color color) {
+      controller.add(color);
+      setState(() {
+        pickerColor = color;
+      });
+    }
+
+    final myController = TextEditingController();
+    slideDialog.showSlideDialog(
+      context: context,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          new TextField(
+            controller: myController,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'EnterToDO',
+            ),
+          ),
+          SizedBox(
+            height: 235,
+            child: new MaterialPicker(
+                pickerColor: pickerColor,
+                onColorChanged: (Color color) =>
+                    setState(() => changeColor(color))),
+          ),
+          new StreamBuilder(
+              stream: stream,
+              builder: (context, snapshot) {
+                return Center(
+                  child: new FlatButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                          side: BorderSide(color: Colors.white)),
+                      color: pickerColor,
+                      child: new Text("Add Todo"),
+                      onPressed: () {
+                        var todo = new Todo(
+                            name: myController.text,
+                            date: getNowDate(DateTime.now()),
+                            color: pickerColor.toString());
+                        if (todo.name != "") DBHelper().createData(todo);
+                        print('${todo.color} + ${todo.name}');
+                        Navigator.pop(context);
+                        setState(() {});
+                      }),
+                );
+              })
+        ],
+      ),
+    );
+  }
 }
 
 ///현재 날짜를 입력해서 정해진 형식을 뽑아옴
 String getNowDate(DateTime now) {
   return now.year.toString() + now.month.toString() + now.day.toString();
+}
+
+String colorToHex(Color color) {
+  return color.value.toRadixString(16);
 }
