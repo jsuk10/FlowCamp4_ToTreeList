@@ -148,9 +148,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildRow(Todo todo) {
     final bool alreadySaved = todo.state == 1;
-    Color color = todo.color == null ? Colors.blue : todo.color as Color;
-
-    print('${color} + ${todo.name}');
+    Color otherColor = Colors.white;
+    if (todo.color != null) {
+      otherColor = stringtoColor(todo);
+    }
 
     //슬라이드가 가능한 버튼
     return Slidable(
@@ -158,7 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
       actionExtentRatio: 0.25,
       child: Card(
           margin: EdgeInsets.fromLTRB(8, 4, 8, 4),
-          color: color,
+          color: otherColor,
           child: ListTile(
             title: Text(
               todo.toString(),
@@ -194,6 +195,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void FlutterDialog(Todo todo) {
+    Color pickerColor = stringtoColor(todo);
+    var controller = StreamController<Color>();
+    Stream<Color> stream = controller.stream;
+
+    void changeColor(Color color) {
+      controller.add(color);
+      print("before"+pickerColor.toString());
+      setState(() {
+        pickerColor = color;
+      });
+      print(pickerColor);
+    }
+
     final myController = TextEditingController();
     showDialog(
         context: context,
@@ -220,20 +234,37 @@ class _MyHomePageState extends State<MyHomePage> {
                     labelText: 'ToDO',
                   ),
                 ),
+                SizedBox(
+                  height: 230,
+                  child: new MaterialPicker(
+                      pickerColor: pickerColor,
+                      onColorChanged: (Color color) =>
+                          setState(() => changeColor(color))),
+                ),
               ],
             ),
             actions: <Widget>[
-              new FlatButton(
-                child: new Text("바꾸기"),
-                onPressed: () {
-                  todo.name = myController.text;
-                  if (todo.name != "") {
-                    DBHelper().updateTodoName(todo);
-                    setState(() {});
-                  }
-                  Navigator.pop(context);
-                },
-              ),
+              new StreamBuilder(
+                  stream: stream,
+                  builder: (context, snapshot) {
+                    return Center(
+                      child: new FlatButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18.0),
+                              side: BorderSide(color: Colors.white)),
+                          color: pickerColor,
+                          child: new Text("Change"),
+                          onPressed: () {
+                            print(myController.text);
+                            if(myController.text!="")
+                            todo.name = myController.text;
+                            todo.color = pickerColor.toString();
+                            DBHelper().updateTodoName(todo);
+                            Navigator.pop(context);
+                            setState(() {});
+                          }),
+                    );
+                  }),
             ],
           );
         });
@@ -288,7 +319,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             date: getNowDate(DateTime.now()),
                             color: pickerColor.toString());
                         if (todo.name != "") DBHelper().createData(todo);
-                        print('${todo.color} + ${todo.name}');
                         Navigator.pop(context);
                         setState(() {});
                       }),
@@ -305,6 +335,8 @@ String getNowDate(DateTime now) {
   return now.year.toString() + now.month.toString() + now.day.toString();
 }
 
-String colorToHex(Color color) {
-  return color.value.toRadixString(16);
+Color stringtoColor(Todo todo){
+  String valueString = todo.color?.split('(0x')[1].split(')')[0]; // kind of hacky..
+  int value = int.parse(valueString, radix: 16);
+  return new Color(value);
 }
