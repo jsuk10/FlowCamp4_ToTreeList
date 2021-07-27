@@ -122,8 +122,6 @@ class DBHelper {
 
   //Update
   updateTodoName(Todo todo) async {
-    print("up");
-    print('todoName : ${todo.name} ${todo.color}');
     final db = await database;
     var res = db!.rawUpdate(
         'UPDATE $tableName SET name = ?, color = ? WHERE id = ?',

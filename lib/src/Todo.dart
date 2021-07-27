@@ -138,7 +138,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   if (todo.name != "") DBHelper().createData(todo);
                   Navigator.pop(context);
                   setState(() {});
-                  print(todo.name);
                 },
               ),
             ],
@@ -201,11 +200,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     void changeColor(Color color) {
       controller.add(color);
-      print("before"+pickerColor.toString());
       setState(() {
         pickerColor = color;
       });
-      print(pickerColor);
     }
 
     final myController = TextEditingController();
@@ -255,7 +252,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: pickerColor,
                           child: new Text("Change"),
                           onPressed: () {
-                            print(myController.text);
                             if(myController.text!="")
                             todo.name = myController.text;
                             todo.color = pickerColor.toString();
