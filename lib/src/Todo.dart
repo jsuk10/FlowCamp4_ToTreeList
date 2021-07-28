@@ -21,6 +21,20 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   double _sliderValue = 100;
   bool _isCkeck = false;
+  var itemCnt = 0;
+  var donePer = 0.0;
+  Map<String, double> events = {};
+
+  @override
+  Future<void> didChangeDependencies() async {
+    super.didChangeDependencies();
+    //await DBHelper().createPer(DateTime.now().year.toString() + (DateTime.now().month+5).toString() + (DateTime.now().day-2).toString());
+    //await DBHelper().updatePer(DateTime.now().year.toString() + (DateTime.now().month+5).toString() + (DateTime.now().day-2).toString(), 0.5);
+    var allPer = await DBHelper().getAllPer();
+    for (int i = 0; i < allPer.length; i++) {
+      events[allPer[i]['date']] = allPer[i]['per'].toDouble();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +47,8 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.push(
                 context,
                 Transition(
-                    child: CalendarScreen(title: 'calendar'),
+                    child: CalendarScreen(
+                        title: 'calendar', donePer: donePer, events: events),
                     transitionEffect: TransitionEffect.TOP_TO_BOTTOM));
           },
         ),
@@ -42,6 +57,11 @@ class _MyHomePageState extends State<MyHomePage> {
         future: DBHelper().getAllTodos(),
         builder: (BuildContext context, AsyncSnapshot<List<Todo>> snapshot) {
           if (snapshot.hasData) {
+            itemCnt = snapshot.data!.length;
+            if (itemCnt == 0) {
+              DBHelper().createPer(getNowDate(DateTime.now()));
+              //events[getNowDate(DateTime.now())] = 0.0;
+            }
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (BuildContext context, int index) {
@@ -101,7 +121,8 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () => Navigator.push(
                   context,
                   Transition(
-                      child: CalendarScreen(title: 'calendar'),
+                      child: CalendarScreen(
+                          title: 'calendar', donePer: donePer, events: events),
                       transitionEffect: TransitionEffect.TOP_TO_BOTTOM)),
             ),
           ],
@@ -122,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ));
   }
 
-  void addButtonAction() {
+  Future<void> addButtonAction() async {
     final myController = TextEditingController();
     showDialog(
         context: context,
@@ -152,9 +173,10 @@ class _MyHomePageState extends State<MyHomePage> {
             actions: <Widget>[
               new FlatButton(
                 child: new Text("추가"),
-                onPressed: () {
+                onPressed: () async {
                   var todo = new Todo(
                       name: myController.text,
+                      state: 0,
                       date: getNowDate(DateTime.now()));
                   if (todo.name != "") DBHelper().createData(todo);
                   Navigator.pop(context);
@@ -182,7 +204,6 @@ class _MyHomePageState extends State<MyHomePage> {
           duration: Duration(seconds: 2),
           child: Card(
               margin: EdgeInsets.fromLTRB(8, 4, 8, 4),
-              color: otherColor,
               child: ListTile(
                 title: Text(
                   todo.toString(),
@@ -194,11 +215,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 //길게 클릭시
                 onLongPress: () => FlutterDialog(todo),
                 //짥게 클릭시
-                onTap: () {
+                onTap: () async {
                   if (todo.state == null) todo.state = 0;
                   todo.state = todo.state == 0 ? 1 : 0;
                   DBHelper().updateTodoState(todo);
                   setState(() {});
+
+                  var doneData =
+                      await DBHelper().getDayTodos(getNowDate(DateTime.now()));
+                  donePer = (doneData / itemCnt).toDouble();
+                  await DBHelper().updatePer(
+                      getNowDate(DateTime.now()), donePer.toDouble());
+
+                  events[getNowDate(DateTime.now())] = donePer;
                 },
               ))),
       //오른쪽 슬라이드

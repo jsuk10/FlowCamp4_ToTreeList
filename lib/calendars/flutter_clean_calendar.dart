@@ -77,7 +77,7 @@ class Calendar extends StatefulWidget {
   final EventListBuilder? eventListBuilder;
   final bool hideArrows;
   final bool hideTodayIcon;
-  final Map<DateTime, List<CleanCalendarEvent>>? events;
+  final Map<String, double>? events;
   final Color? selectedColor;
   final Color? todayColor;
   final String todayButtonText;
@@ -154,9 +154,7 @@ class _CalendarState extends State<Calendar> {
       displayMonth =
       '${monthFormat[0].toUpperCase()}${monthFormat.substring(1)}';
     }));
-    _selectedEvents = widget.events?[DateTime(
-        _selectedDate.year, _selectedDate.month, _selectedDate.day)] ??
-        [];
+
   }
 
   Widget get nameAndIconRow {
@@ -245,7 +243,7 @@ class _CalendarState extends State<Calendar> {
             todayColor: widget.todayColor,
             eventColor: widget.eventColor,
             eventDoneColor: widget.eventDoneColor,
-            events: widget.events![day],
+            events: widget.events?[day] ?? 0,
             isDayOfWeek: true,
             dayOfWeek: day,
             dayOfWeekStyle: widget.dayOfWeekStyle ??
@@ -285,7 +283,7 @@ class _CalendarState extends State<Calendar> {
               todayColor: widget.todayColor,
               eventColor: widget.eventColor,
               eventDoneColor: widget.eventDoneColor,
-              events: widget.events![day],
+              events: widget.events?[day] ?? 0,
               child: widget.dayBuilder!(context, day),
               date: day,
               onDateSelected: () => handleSelectedDateAndUserCallback(day),
@@ -298,7 +296,7 @@ class _CalendarState extends State<Calendar> {
                 todayColor: widget.todayColor,
                 eventColor: widget.eventColor,
                 eventDoneColor: widget.eventDoneColor,
-                events: widget.events![day],
+                events: widget.events?[day] ?? 0,
                 onDateSelected: () => handleSelectedDateAndUserCallback(day),
                 date: day,
                 dateStyles: configureDateStyle(monthStarted, monthEnded),
@@ -376,7 +374,7 @@ class _CalendarState extends State<Calendar> {
   Widget get eventList {
     if (widget.eventListBuilder == null) {
       return Expanded(
-        child: _selectedEvents != null && _selectedEvents!.isNotEmpty
+        child: _selectedEvents != null
             ? ListView.builder(
           padding: EdgeInsets.all(0.0),
           itemBuilder: (BuildContext context, int index) {
@@ -460,9 +458,7 @@ class _CalendarState extends State<Calendar> {
       DateFormat('MMMM yyyy', widget.locale).format(_selectedDate);
       displayMonth =
       '${monthFormat[0].toUpperCase()}${monthFormat.substring(1)}';
-      _selectedEvents = widget.events?[DateTime(
-          _selectedDate.year, _selectedDate.month, _selectedDate.day)] ??
-          [];
+
     });
 
     _launchDateSelectionCallback(_selectedDate);
@@ -479,9 +475,7 @@ class _CalendarState extends State<Calendar> {
       DateFormat('MMMM yyyy', widget.locale).format(_selectedDate);
       displayMonth =
       '${monthFormat[0].toUpperCase()}${monthFormat.substring(1)}';
-      _selectedEvents = widget.events?[DateTime(
-          _selectedDate.year, _selectedDate.month, _selectedDate.day)] ??
-          [];
+
     });
     _launchDateSelectionCallback(_selectedDate);
   }
@@ -497,9 +491,7 @@ class _CalendarState extends State<Calendar> {
       DateFormat('MMMM yyyy', widget.locale).format(_selectedDate);
       displayMonth =
       '${monthFormat[0].toUpperCase()}${monthFormat.substring(1)}';
-      _selectedEvents = widget.events?[DateTime(
-          _selectedDate.year, _selectedDate.month, _selectedDate.day)] ??
-          [];
+
     });
     _launchDateSelectionCallback(_selectedDate);
   }
@@ -517,9 +509,7 @@ class _CalendarState extends State<Calendar> {
       DateFormat('MMMM yyyy', widget.locale).format(_selectedDate);
       displayMonth =
       '${monthFormat[0].toUpperCase()}${monthFormat.substring(1)}';
-      _selectedEvents = widget.events?[DateTime(
-          _selectedDate.year, _selectedDate.month, _selectedDate.day)] ??
-          [];
+
     });
     _launchDateSelectionCallback(_selectedDate);
   }
@@ -537,9 +527,7 @@ class _CalendarState extends State<Calendar> {
       DateFormat('MMMM yyyy', widget.locale).format(_selectedDate);
       displayMonth =
       '${monthFormat[0].toUpperCase()}${monthFormat.substring(1)}';
-      _selectedEvents = widget.events?[DateTime(
-          _selectedDate.year, _selectedDate.month, _selectedDate.day)] ??
-          [];
+
     });
     _launchDateSelectionCallback(_selectedDate);
   }
@@ -612,7 +600,10 @@ class _CalendarState extends State<Calendar> {
           Utils.daysInRange(firstDayOfCurrentWeek, lastDayOfCurrentWeek)
               .toList();
       selectedMonthsDays = _daysInMonth(day);
-      _selectedEvents = widget.events?[_selectedDate] ?? [];
+
+      //여기서 나무 업데이트
+      var date = DateFormat("yyyyMd").format(DateTime.parse(_selectedDate.toString()));
+
     });
     _launchDateSelectionCallback(day);
   }
