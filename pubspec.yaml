@@ -23,6 +23,7 @@ dependencies:
   flutter_swiper: 1.1.6
   flutter_colorpicker: ^0.4.0
   slide_popup_dialog: ^0.0.2
+  rive: ^0.7.22
 
 dev_dependencies:
   flutter_native_splash: ^1.2.0
@@ -34,6 +35,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/
 
 flutter_native_splash:
   color: "#00BFFE"

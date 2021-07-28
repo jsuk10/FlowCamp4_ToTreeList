@@ -603,6 +603,7 @@ class _CalendarState extends State<Calendar> {
 
       //여기서 나무 업데이트
       var date = DateFormat("yyyyMd").format(DateTime.parse(_selectedDate.toString()));
+      print(widget.events![date]);//percent
 
     });
     _launchDateSelectionCallback(day);

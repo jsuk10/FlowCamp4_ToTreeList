@@ -3,11 +3,17 @@ import 'package:my_app/calendars/flutter_clean_calendar.dart';
 import 'package:my_app/calendars/clean_calendar_event.dart';
 import 'package:my_app/db_helper.dart';
 import 'package:my_app/main.dart';
+import 'package:rive/rive.dart';
 
 import 'models/todo_model.dart';
 
 class CalendarScreen extends StatefulWidget {
-  CalendarScreen({Key? key, required this.title, required this.donePer, required this.events}) : super(key: key);
+  CalendarScreen(
+      {Key? key,
+      required this.title,
+      required this.donePer,
+      required this.events})
+      : super(key: key);
 
   final String title;
   final double donePer;
@@ -23,7 +29,11 @@ class CalendarScreen extends StatefulWidget {
 class _CalendarScreenState extends State<CalendarScreen> {
   Map<String, double> _events = {};
 
-  _CalendarScreenState(Map<String, double> events){
+  late RiveAnimationController _controller;
+  Artboard? _artboard;
+  var count = 0;
+
+  _CalendarScreenState(Map<String, double> events) {
     this._events = events;
   }
 
@@ -32,33 +42,115 @@ class _CalendarScreenState extends State<CalendarScreen> {
     super.initState();
     // Force selection of today on first load, so that the list of today's events gets shown.
     _handleNewDate(getNowDate(DateTime.now()));
+    _loadRiveFile();
+  }
+
+  void _onSucess() {
+    if (_artboard != null) {
+      if (count == 1) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('FourToThree'));
+        count++;
+      } else if (count == 2) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('ThreeToTwo'));
+        count++;
+      } else if (count == 3) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('TwoToOne'));
+        count++;
+      } else if (count == 4) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('OneToTwo'));
+        count++;
+      } else if (count == 5) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('TwoToThree'));
+        count++;
+      } else if (count == 6) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('ThreeToFour'));
+        count++;
+      } else if (count == 7) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('ToFall'));
+        count++;
+      } else if (count == 8) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('ToWinter'));
+        count++;
+      } else if (count == 9) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('FallToWinter'));
+        count++;
+      } else {
+        count++;
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('MoveUp'));
+      }
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        _Wind();
+      });
+    }
+  }
+
+  void _Wind() {
+    _artboard!.artboard.removeController(_controller);
+    _artboard!.addController(SimpleAnimation('Wind'));
+  }
+
+  void _onInit(Artboard artboard) {
+    _artboard = artboard;
+  }
+
+  void _loadRiveFile() async {
+    _controller = SimpleAnimation('MoveUp');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("Route Transition Example"),
-      ),
-      body: SafeArea(
-        child: Calendar(
-          startOnMonday: true,
-          weekDays: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
-          events: _events,
-          isExpandable: true,
-          eventDoneColor: Colors.green,
-          selectedColor: Colors.pink,
-          todayColor: Colors.blue,
-          eventColor: Colors.grey,
-          locale: 'ko',
-          isExpanded: true,
-          expandableDateFormat: 'EEEE, dd. MMMM yyyy',
-          dayOfWeekStyle: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w800, fontSize: 11),
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text("Route Transition Example"),
         ),
-      ),
-    );
+        body: Stack(
+          children: <Widget>[
+            Center(
+              child: RiveAnimation.asset(
+                'assets/cloud.riv',
+                onInit: _onInit,
+                fit: BoxFit.cover,
+                controllers: [_controller],
+              ),
+            ),
+            SafeArea(
+              child: Calendar(
+                startOnMonday: true,
+                weekDays: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
+                events: _events,
+                isExpandable: true,
+                eventDoneColor: Colors.green,
+                selectedColor: Colors.pink,
+                todayColor: Colors.blue,
+                eventColor: Colors.grey,
+                locale: 'ko',
+                isExpanded: true,
+                expandableDateFormat: 'EEEE, dd. MMMM yyyy',
+                dayOfWeekStyle: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 11),
+              ),
+            )
+          ],
+        ));
   }
 
   Future<void> _handleNewDate(date) async {
