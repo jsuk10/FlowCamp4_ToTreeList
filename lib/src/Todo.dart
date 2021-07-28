@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:my_app/models/todo_model.dart';
@@ -19,8 +20,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  double _sliderValue = 100;
-  bool _isCkeck = false;
+  double sliderValue = 100;
   var itemCnt = 0;
   var donePer = 0.0;
   Map<String, double> events = {};
@@ -65,9 +65,8 @@ class _MyHomePageState extends State<MyHomePage> {
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (BuildContext context, int index) {
-                // if (index == snapshot.data!.length) return addButton();
                 Todo item = snapshot.data![index];
-                return _buildRow(item, _sliderValue / 100);
+                return _buildRow(item, sliderValue / 100);
               },
             );
           } else {
@@ -78,8 +77,9 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black,
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Icon(Icons.add,color: Colors.black,),
         onPressed: () => SliderDialog(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -89,29 +89,16 @@ class _MyHomePageState extends State<MyHomePage> {
         child: new Row(
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: 5, bottom: 5, left: 10),
-              child: CupertinoSwitch(
-                value: _isCkeck,
-                onChanged: (bool value) {
-                  setState(() {
-                    _isCkeck = value;
-                    _sliderValue = _isCkeck ? 100 : 20;
-                  });
-                },
+            IconButton(
+              icon: Icon(
+                (sliderValue == 20) ? Icons.visibility : Icons.visibility_off,
+                color: Colors.white,
               ),
+              onPressed: () {
+                sliderValue = (sliderValue == 20) ? 100 : 20;
+                setState(() {});
+              },
             ),
-
-            // IconButton(
-            //     icon: Icon(
-            //       Icons.remove_red_eye_sharp,
-            //       color: Colors.white,
-            //     ),
-            //     onPressed: () => setState(
-            //           () {
-            //             _sliderValue = _sliderValue == 100 ? 20 : 100;
-            //           },
-            //         )),
             new Expanded(child: new SizedBox()),
             IconButton(
               icon: Icon(
@@ -194,7 +181,6 @@ class _MyHomePageState extends State<MyHomePage> {
     if (todo.color != null) {
       otherColor = stringtoColor(todo);
     }
-
     //슬라이드가 가능한 버튼
     return Slidable(
       actionPane: SlidableDrawerActionPane(),
