@@ -21,9 +21,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
+    //await DBHelper().createPer(DateTime.now().year.toString() + (DateTime.now().month+5).toString() + (DateTime.now().day-2).toString());
+    //await DBHelper().updatePer(DateTime.now().year.toString() + (DateTime.now().month+5).toString() + (DateTime.now().day-2).toString(), 0.5);
     var allPer = await DBHelper().getAllPer();
     for (int i=0;i<allPer.length;i++){
-      print(allPer[i]['per']);
       events[allPer[i]['date']] = allPer[i]['per'].toDouble();
     }
   }
@@ -50,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
             itemCnt = snapshot.data!.length;
             if (itemCnt==0){
               DBHelper().createPer(getNowDate(DateTime.now()));
-              events[getNowDate(DateTime.now())] = 0.0;
+              //events[getNowDate(DateTime.now())] = 0.0;
             }
             return ListView.builder(
               itemCount: snapshot.data!.length,
@@ -158,11 +159,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   if (todo.name != "") DBHelper().createData(todo);
                   Navigator.pop(context);
                   setState(() {});
-                  print(todo.name);
-                  //await DBHelper().updatePer(DateTime.now().year.toString() + DateTime.now().month.toString() + DateTime.now().day.toString(), doneData);
-                  //var per = await DBHelper().getPer(DateTime.now().year.toString() + DateTime.now().month.toString() + DateTime.now().day.toString());
-                  //print("ADDDDDDDDDDDD" + per);
-
                 },
               ),
             ],
@@ -198,21 +194,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
               var doneData = await DBHelper().getDayTodos(getNowDate(DateTime.now()));
               donePer = (doneData / itemCnt).toDouble();
-              print("DONEDATA" + donePer.toString());
               await DBHelper().updatePer(getNowDate(DateTime.now()), donePer.toDouble());
-              //var per = await DBHelper().getPer(getNowDate(DateTime.now()));
-              //print("PERCENT" + per.toString());
-
-              var allPer = await DBHelper().getAllPer();
-              for (int i=0;i<allPer.length;i++){
-                print(allPer[i]['per']);
-                events[allPer[i]['date']] = allPer[i]['per'].toDouble();
-              }
 
               events[getNowDate(DateTime.now())] = donePer;
-              //events[DateTime.now().year.toString() + DateTime.now().month.toString() + (DateTime.now().day+1).toString()] = 0;
-              print("EVENTS" + events.toString());
-
             },
           )),
       //오른쪽 슬라이드
@@ -265,7 +249,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: new Text("바꾸기"),
                 onPressed: () {
                   todo.name = myController.text;
-                  print(todo.name);
                   if (todo.name != "") {
                     DBHelper().updateTodoName(todo);
                     setState(() {});

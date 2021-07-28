@@ -29,7 +29,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   void initState() {
-    print("EVENTS!!" + this._events.toString());
     super.initState();
     // Force selection of today on first load, so that the list of today's events gets shown.
     _handleNewDate(getNowDate(DateTime.now()));
@@ -64,8 +63,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Future<void> _handleNewDate(date) async {
     var gotPer = await DBHelper().getPer(getNowDate(DateTime.now()));
-    print("PERCENT" + gotPer.toString());
-    print('Date selected: $date');
   }
 }
 

@@ -572,8 +572,6 @@ class _CalendarState extends State<Calendar> {
   }
 
   void handleSelectedDateAndUserCallback(DateTime day) {
-    //print(_selectedDate);
-    //print(_selectedDate.year.toString() + _selectedDate.month.toString() + _selectedDate.day.toString());
     var firstDayOfCurrentWeek = _firstDayOfWeek(day);
     var lastDayOfCurrentWeek = _lastDayOfWeek(day);
     // Check if the selected day falls into the next month. If this is the case,
@@ -604,10 +602,7 @@ class _CalendarState extends State<Calendar> {
       selectedMonthsDays = _daysInMonth(day);
 
       //여기서 나무 업데이트
-      print(_selectedDate);
       var date = DateFormat("yyyyMd").format(DateTime.parse(_selectedDate.toString()));
-      print(date);
-      print(widget.events![date]);
 
     });
     _launchDateSelectionCallback(day);

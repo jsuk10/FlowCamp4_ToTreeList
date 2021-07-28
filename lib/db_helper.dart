@@ -26,11 +26,8 @@ class DBHelper {
   }
 
   initDB() async {
-    print("INIIIIIIIIIIT)");
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    print(documentsDirectory.toString());
     String path = join(documentsDirectory.path, 'MyDogsDB.db');
-    print("PPPPPPPPPPPPPATH" + path.toString());
 
     return await openDatabase(
         path,
@@ -50,7 +47,6 @@ class DBHelper {
   showTable() async {
     final db = await database;
     List result = await db!.rawQuery("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'android_%'");
-    print(result);
   }
 
   createPer(String date) async{
@@ -76,7 +72,6 @@ class DBHelper {
   getAllPer() async{
     final db = await database;
     var res = await db!.rawQuery('SELECT * FROM $perTableName');
-    print("GETALLPER" + res.toString());
     return res;
   }
 
