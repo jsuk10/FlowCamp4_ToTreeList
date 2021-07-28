@@ -201,9 +201,10 @@ class _MyHomePageState extends State<MyHomePage> {
       actionExtentRatio: 0.25,
       child: AnimatedOpacity(
           opacity: opacity,
-          duration: Duration(seconds: 2),
+          duration: Duration(seconds: 1),
           child: Card(
               margin: EdgeInsets.fromLTRB(8, 4, 8, 4),
+              color: otherColor,
               child: ListTile(
                 title: Text(
                   todo.toString(),
