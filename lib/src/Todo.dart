@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:my_app/models/todo_model.dart';
+import 'package:rive/rive.dart';
 import 'package:transition/transition.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,83 @@ class _MyHomePageState extends State<MyHomePage> {
   var itemCnt = 0;
   var donePer = 0.0;
   Map<String, double> events = {};
+  late RiveAnimationController _controller;
+  Artboard? _artboard;
+  var count = 0;
+
+  void _onSucess() {
+    if (_artboard != null) {
+      if (count == 1) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('FourToThree'));
+        count++;
+      } else if (count == 2) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('ThreeToTwo'));
+        count++;
+      } else if (count == 3) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('TwoToOne'));
+        count++;
+      } else if (count == 4) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('OneToTwo'));
+        count++;
+      } else if (count == 5) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('TwoToThree'));
+        count++;
+      } else if (count == 6) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('ThreeToFour'));
+        count++;
+      } else if (count == 7) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('ToFall'));
+        count++;
+      } else if (count == 8) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('ToWinter'));
+        count++;
+      } else if (count == 9) {
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('FallToWinter'));
+        count++;
+      } else {
+        count++;
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('MoveUp'));
+      }
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        _Wind();
+      });
+    }
+  }
+
+  void _Wind() {
+    _artboard!.artboard.removeController(_controller);
+    _artboard!.addController(SimpleAnimation('Wind'));
+  }
+
+  void _onInit(Artboard artboard) {
+    _artboard = artboard;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRiveFile();
+  }
+
+  void _loadRiveFile() async {
+    _controller = SimpleAnimation('MoveUp');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Future<void> didChangeDependencies() async {
@@ -39,20 +117,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.green,
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(title: Text(widget.title), actions: <Widget>[
-        IconButton(
-          icon: Icon(Icons.list),
-          onPressed: () {
-            Navigator.push(
-                context,
-                Transition(
-                    child: CalendarScreen(
-                        title: 'calendar', donePer: donePer, events: events),
-                    transitionEffect: TransitionEffect.TOP_TO_BOTTOM));
-          },
-        ),
-      ]),
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
       body: FutureBuilder(
         future: DBHelper().getAllTodos(),
         builder: (BuildContext context, AsyncSnapshot<List<Todo>> snapshot) {
@@ -62,12 +131,32 @@ class _MyHomePageState extends State<MyHomePage> {
               DBHelper().createPer(getNowDate(DateTime.now()));
               //events[getNowDate(DateTime.now())] = 0.0;
             }
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (BuildContext context, int index) {
-                Todo item = snapshot.data![index];
-                return _buildRow(item, sliderValue / 100);
-              },
+            return Stack(
+              children: <Widget>[
+                Center(
+                    child: GestureDetector(
+                  onTap: _onSucess,
+                  child: RiveAnimation.asset(
+                    'assets/cloud.riv',
+                    onInit: _onInit,
+                    fit: BoxFit.cover,
+                    controllers: [_controller],
+                  ),
+                )),
+                Positioned(
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 30,
+                    child: ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        // if (index == snapshot.data!.length) return addButton();
+                        Todo item = snapshot.data![index];
+                        return _buildRow(item, sliderValue / 100);
+                      },
+                    )),
+              ],
             );
           } else {
             return Center(
@@ -77,9 +166,12 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Color.fromRGBO(104, 65, 50, 1),
         elevation: 0,
-        child: Icon(Icons.add,color: Colors.black,),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
         onPressed: () => SliderDialog(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -206,7 +298,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   if (todo.state == null) todo.state = 0;
                   todo.state = todo.state == 0 ? 1 : 0;
                   DBHelper().updateTodoState(todo);
-                  setState(() {});
+                  setState(() {
+                    _onSucess();
+                  });
 
                   var doneData =
                       await DBHelper().getDayTodos(getNowDate(DateTime.now()));
