@@ -9,11 +9,10 @@ import 'models/todo_model.dart';
 import 'src/funtion.dart';
 
 class CalendarScreen extends StatefulWidget {
-  CalendarScreen(
-      {Key? key,
-      required this.title,
-      required this.donePer,
-      required this.events})
+  CalendarScreen({Key? key,
+    required this.title,
+    required this.donePer,
+    required this.events})
       : super(key: key);
 
   final String title;
@@ -117,10 +116,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text("Route Transition Example"),
-        ),
+        // appBar: AppBar(
+        //   // centerTitle: true,
+        //   title: Text("Route Transition Example"),
+        // ),
         body: Stack(
           children: <Widget>[
             Center(
@@ -151,7 +150,27 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
             )
           ],
-        ));
+        ),
+        bottomNavigationBar:new BottomAppBar(
+          shape: CircularNotchedRectangle(),
+          color: Color.fromRGBO(104, 65, 50, 1),
+          child: new Row(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              IconButton(
+                icon: Icon(
+                  Icons.,
+                  color: Colors.white,
+                ), onPressed: () {
+                Navigator.pop(context);
+              },
+              ),
+            ],
+          ),
+        ),
+    );
+
+
   }
 
   Future<void> _handleNewDate(date) async {

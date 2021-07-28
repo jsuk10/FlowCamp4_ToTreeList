@@ -402,7 +402,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     final myController = TextEditingController();
-    print("dia");
     slideDialog.showSlideDialog(
         barrierColor: Colors.white.withOpacity(0.7),
         context: context,
