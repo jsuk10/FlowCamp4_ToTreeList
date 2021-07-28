@@ -77,7 +77,7 @@ class Calendar extends StatefulWidget {
   final EventListBuilder? eventListBuilder;
   final bool hideArrows;
   final bool hideTodayIcon;
-  final Map<DateTime, double>? events;
+  final Map<String, double>? events;
   final Color? selectedColor;
   final Color? todayColor;
   final String todayButtonText;
@@ -605,7 +605,9 @@ class _CalendarState extends State<Calendar> {
 
       //여기서 나무 업데이트
       print(_selectedDate);
-      print(widget.events![DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day)]);
+      var date = DateFormat("yyyyMd").format(DateTime.parse(_selectedDate.toString()));
+      print(date);
+      print(widget.events![date]);
 
     });
     _launchDateSelectionCallback(day);

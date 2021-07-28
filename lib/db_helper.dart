@@ -5,6 +5,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 import 'package:my_app/models/todo_model.dart';
+import 'package:my_app/models/percent_model.dart';
 
 final String tableName = 'Todo';
 final String perTableName = 'Per';
@@ -54,7 +55,7 @@ class DBHelper {
 
   createPer(String date) async{
     final db = await database;
-    var res = await db!.rawInsert('INSERT OR REPLACE INTO $perTableName(date, per) VALUES(?, ?)', [date, 0]);
+    var res = await db!.rawInsert('INSERT OR REPLACE INTO $perTableName(date, per) VALUES(?, ?)', [date, 0.0]);
     return res;
   }
 
@@ -70,6 +71,13 @@ class DBHelper {
     if (res.isNotEmpty){
       return res.first['per'];
     }
+  }
+
+  getAllPer() async{
+    final db = await database;
+    var res = await db!.rawQuery('SELECT * FROM $perTableName');
+    print("GETALLPER" + res.toString());
+    return res;
   }
 
   deleteAllPer() async {
@@ -100,8 +108,6 @@ class DBHelper {
     final db = await database;
     var res = await db!.rawQuery('SELECT * FROM $tableName WHERE date = ? and state = ?', [date, 1]);
     List<Todo> list = res.isNotEmpty ? res.map((c) => Todo(id:c['id'], name:c['name'], date:c['date'], state:c['state'])).toList() : [];
-
-    print(list.length);
 
     return list.length;
   }

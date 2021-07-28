@@ -11,7 +11,7 @@ class CalendarScreen extends StatefulWidget {
 
   final String title;
   final double donePer;
-  final Map<DateTime, double> events;
+  final Map<String, double> events;
 
   @override
   State<StatefulWidget> createState() {
@@ -21,9 +21,9 @@ class CalendarScreen extends StatefulWidget {
 
 //여기서 todo data 보여줌
 class _CalendarScreenState extends State<CalendarScreen> {
-  Map<DateTime, double> _events = {};
+  Map<String, double> _events = {};
 
-  _CalendarScreenState(Map<DateTime, double> events){
+  _CalendarScreenState(Map<String, double> events){
     this._events = events;
   }
 
@@ -32,8 +32,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     print("EVENTS!!" + this._events.toString());
     super.initState();
     // Force selection of today on first load, so that the list of today's events gets shown.
-    _handleNewDate(DateTime(
-        DateTime.now().year, DateTime.now().month, DateTime.now().day));
+    _handleNewDate(getNowDate(DateTime.now()));
   }
 
   @override
