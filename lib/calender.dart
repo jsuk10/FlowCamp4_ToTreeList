@@ -6,6 +6,7 @@ import 'package:my_app/main.dart';
 import 'package:rive/rive.dart';
 
 import 'models/todo_model.dart';
+import 'src/funtion.dart';
 
 class CalendarScreen extends StatefulWidget {
   CalendarScreen(
@@ -156,8 +157,4 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Future<void> _handleNewDate(date) async {
     var gotPer = await DBHelper().getPer(getNowDate(DateTime.now()));
   }
-}
-
-String getNowDate(DateTime now) {
-  return now.year.toString() + now.month.toString() + now.day.toString();
 }

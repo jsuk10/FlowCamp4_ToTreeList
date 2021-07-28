@@ -11,6 +11,7 @@ import '../calender.dart';
 import '../db_helper.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:slide_popup_dialog/slide_popup_dialog.dart' as slideDialog;
+import 'funtion.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -120,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: Colors.green,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(getNowDate(DateTime.now())),
       ),
       body: FutureBuilder(
         future: DBHelper().getAllTodos(),
@@ -208,18 +209,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
-  }
-
-  Widget addButton() {
-    return Container(
-        child: ListTile(
-      title: Text(
-        "투두 더하기",
-        textScaleFactor: 1,
-      ),
-      trailing: Icon(Icons.add),
-      onTap: () => addButtonAction(),
-    ));
   }
 
   Future<void> addButtonAction() async {
@@ -458,16 +447,4 @@ class _MyHomePageState extends State<MyHomePage> {
                   })
             ])));
   }
-}
-
-///현재 날짜를 입력해서 정해진 형식을 뽑아옴
-String getNowDate(DateTime now) {
-  return now.year.toString() + now.month.toString() + now.day.toString();
-}
-
-Color stringtoColor(Todo todo) {
-  String valueString =
-      todo.color?.split('(0x')[1].split(')')[0]; // kind of hacky..
-  int value = int.parse(valueString, radix: 16);
-  return new Color(value);
 }
