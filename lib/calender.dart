@@ -159,7 +159,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             children: <Widget>[
               IconButton(
                 icon: Icon(
-                  Icons.,
+                  Icons.add,
                   color: Colors.white,
                 ), onPressed: () {
                 Navigator.pop(context);

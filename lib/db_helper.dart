@@ -115,7 +115,7 @@ class DBHelper {
     }
   }
 
-  getDayTodos(String date) async{
+  Future<List<Todo>> getDayTodos(String date) async{
     final db = await database;
     var res =
     await db!.rawQuery('SELECT * FROM $tableName WHERE date = ?', [date]);

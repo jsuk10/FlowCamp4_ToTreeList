@@ -124,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(getNowDate(DateTime.now())),
       ),
       body: FutureBuilder(
-        future: DBHelper().getAllTodos(),
+        future: DBHelper().getDayTodos(getNowDate(DateTime.now())),
         builder: (BuildContext context, AsyncSnapshot<List<Todo>> snapshot) {
           if (snapshot.hasData) {
             itemCnt = snapshot.data!.length;
