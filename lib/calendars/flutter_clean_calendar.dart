@@ -1,12 +1,14 @@
 library flutter_clean_calendar;
 
 import 'package:flutter/material.dart';
+import '../Bloc.dart';
 import './simple_gesture_detector.dart';
 import './calendar_tile.dart';
 import './clean_calendar_event.dart';
 import './date_utils.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:my_app/calender.dart';
 
 // Export NeatCleanCalendarEvent for using it in the application
 export './clean_calendar_event.dart';
@@ -603,8 +605,8 @@ class _CalendarState extends State<Calendar> {
 
       //여기서 나무 업데이트
       var date = DateFormat("yyyyMd").format(DateTime.parse(_selectedDate.toString()));
-      print(widget.events![date]);//percent
-
+      print(date);//percent
+      bloc.changeTreeFromClick(widget.events![date]);
     });
     _launchDateSelectionCallback(day);
   }
