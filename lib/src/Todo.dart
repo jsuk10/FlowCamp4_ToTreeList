@@ -303,7 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   });
 
                   var doneData =
-                      await DBHelper().getDayTodos(getNowDate(DateTime.now()));
+                      await DBHelper().getDoneTodos(getNowDate(DateTime.now()));
                   donePer = (doneData / itemCnt).toDouble();
                   await DBHelper().updatePer(
                       getNowDate(DateTime.now()), donePer.toDouble());
