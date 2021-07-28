@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:my_app/models/todo_model.dart';
 import 'package:transition/transition.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -18,6 +19,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  double _sliderValue = 100;
+  bool _isCkeck = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
               itemBuilder: (BuildContext context, int index) {
                 // if (index == snapshot.data!.length) return addButton();
                 Todo item = snapshot.data![index];
-                return _buildRow(item);
+                return _buildRow(item, _sliderValue / 100);
               },
             );
           } else {
@@ -65,13 +69,29 @@ class _MyHomePageState extends State<MyHomePage> {
         child: new Row(
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
+            Padding(
+              padding: EdgeInsets.only(top: 5, bottom: 5, left: 10),
+              child: CupertinoSwitch(
+                value: _isCkeck,
+                onChanged: (bool value) {
+                  setState(() {
+                    _isCkeck = value;
+                    _sliderValue = _isCkeck ? 100 : 20;
+                  });
+                },
               ),
-              onPressed: () => addButtonAction(),
             ),
+
+            // IconButton(
+            //     icon: Icon(
+            //       Icons.remove_red_eye_sharp,
+            //       color: Colors.white,
+            //     ),
+            //     onPressed: () => setState(
+            //           () {
+            //             _sliderValue = _sliderValue == 100 ? 20 : 100;
+            //           },
+            //         )),
             new Expanded(child: new SizedBox()),
             IconButton(
               icon: Icon(
@@ -146,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
-  Widget _buildRow(Todo todo) {
+  Widget _buildRow(Todo todo, double opacity) {
     final bool alreadySaved = todo.state == 1;
     Color otherColor = Colors.white;
     if (todo.color != null) {
@@ -157,27 +177,30 @@ class _MyHomePageState extends State<MyHomePage> {
     return Slidable(
       actionPane: SlidableDrawerActionPane(),
       actionExtentRatio: 0.25,
-      child: Card(
-          margin: EdgeInsets.fromLTRB(8, 4, 8, 4),
-          color: otherColor,
-          child: ListTile(
-            title: Text(
-              todo.toString(),
-              textScaleFactor: 1,
-            ),
-            leading: Icon(
-                !alreadySaved ? Icons.favorite_border : Icons.favorite,
-                color: Colors.pink),
-            //길게 클릭시
-            onLongPress: () => FlutterDialog(todo),
-            //짥게 클릭시
-            onTap: () {
-              if (todo.state == null) todo.state = 0;
-              todo.state = todo.state == 0 ? 1 : 0;
-              DBHelper().updateTodoState(todo);
-              setState(() {});
-            },
-          )),
+      child: AnimatedOpacity(
+          opacity: opacity,
+          duration: Duration(seconds: 2),
+          child: Card(
+              margin: EdgeInsets.fromLTRB(8, 4, 8, 4),
+              color: otherColor,
+              child: ListTile(
+                title: Text(
+                  todo.toString(),
+                  textScaleFactor: 1,
+                ),
+                leading: Icon(
+                    !alreadySaved ? Icons.favorite_border : Icons.favorite,
+                    color: Colors.pink),
+                //길게 클릭시
+                onLongPress: () => FlutterDialog(todo),
+                //짥게 클릭시
+                onTap: () {
+                  if (todo.state == null) todo.state = 0;
+                  todo.state = todo.state == 0 ? 1 : 0;
+                  DBHelper().updateTodoState(todo);
+                  setState(() {});
+                },
+              ))),
       //오른쪽 슬라이드
       // actions: <Widget>[]
       //왼쪽 슬라이드
