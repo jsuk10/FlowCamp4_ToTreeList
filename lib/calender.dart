@@ -166,75 +166,82 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double opicty = 0.8;
-    var controller = StreamController<double>();
-    Stream<double> stream = controller.stream;
+    return StreamBuilder<double>(
+        stream: bloc.savedStream,
+        builder: (context, snapshot) {
+          if (snapshot.data != null) {
+            _ActiveAnimation(snapshot.data);
+          }
+          double opicty = 0.8;
+          var controller = StreamController<double>();
+          Stream<double> stream = controller.stream;
 
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Center(
-              child: new StreamBuilder(
-                  stream: stream,
-                  builder: (context, snapshot) {
-                    return AnimatedOpacity(
-                      opacity: (snapshot.data != null)
-                          ? snapshot.data as double
-                          : opicty,
-                      duration: Duration(seconds: 1),
-                      child: RiveAnimation.asset(
-                        'assets/cloud.riv',
-                        onInit: _onInit,
-                        fit: BoxFit.cover,
-                        controllers: [_controller],
-                      ),
-                    );
-                  })),
-          SafeArea(
-            child: Calendar(
-              startOnMonday: true,
-              onExpandStateChanged: (value) {
-                opicty = value ? 0.5 : 0.8;
-                controller.add(opicty);
-                setState(() {});
-              },
-              weekDays: ['mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
-              events: _events,
-              isExpandable: true,
-              eventDoneColor: Colors.green,
-              selectedColor: Colors.pink,
-              todayColor: Colors.blue,
-              eventColor: Colors.grey,
-              locale: 'ko',
-              isExpanded: false,
-              expandableDateFormat: 'EEEE, dd. MMMM yyyy',
-              dayOfWeekStyle: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 11),
+          return Scaffold(
+            body: Stack(
+              children: <Widget>[
+                Center(
+                    child: new StreamBuilder(
+                        stream: stream,
+                        builder: (context, snapshot) {
+                          return AnimatedOpacity(
+                            opacity: (snapshot.data != null)
+                                ? snapshot.data as double
+                                : opicty,
+                            duration: Duration(seconds: 1),
+                            child: RiveAnimation.asset(
+                              'assets/cloud.riv',
+                              onInit: _onInit,
+                              fit: BoxFit.cover,
+                              controllers: [_controller],
+                            ),
+                          );
+                        })),
+                SafeArea(
+                  child: Calendar(
+                    startOnMonday: true,
+                    onExpandStateChanged: (value) {
+                      opicty = value ? 0.5 : 0.8;
+                      controller.add(opicty);
+                      setState(() {});
+                    },
+                    weekDays: ['mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
+                    events: _events,
+                    isExpandable: true,
+                    eventDoneColor: Colors.green,
+                    selectedColor: Colors.pink,
+                    todayColor: Colors.blue,
+                    eventColor: Colors.grey,
+                    locale: 'ko',
+                    isExpanded: false,
+                    expandableDateFormat: 'EEEE, dd. MMMM yyyy',
+                    dayOfWeekStyle: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 11),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: new BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        color: Color.fromRGBO(104, 65, 50, 1),
-        child: new Row(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
+            bottomNavigationBar: new BottomAppBar(
+              shape: CircularNotchedRectangle(),
+              color: Color.fromRGBO(104, 65, 50, 1),
+              child: new Row(
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Icons.keyboard_backspace,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
               ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
             ),
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 
   Future<void> _handleNewDate(date) async {
