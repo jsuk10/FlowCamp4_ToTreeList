@@ -133,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
     DBHelper().deleteAllPer();
     super.didChangeDependencies();
 
-    /**var date = '2021.07.28';
+    var date = '2021.07.28';
     await DBHelper().createPer(date);
     await DBHelper().updatePer(date, 0.3);
     date = '2021.07.27';
@@ -153,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await DBHelper().updatePer(date, 0.6);
     date = '2021.01.29';
     await DBHelper().createPer(date);
-    await DBHelper().updatePer(date, 0.6);*/
+    await DBHelper().updatePer(date, 0.6);
 
     var allPer = await DBHelper().getAllPer();
     for (int i = 0; i < allPer.length; i++) {
