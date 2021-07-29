@@ -18,3 +18,15 @@ Color stringtoColor(Todo todo) {
   int value = int.parse(valueString, radix: 16);
   return new Color(value);
 }
+Color codeToColor(String color) {
+  String valueString = color;
+  int value = int.parse(valueString, radix: 16);
+  return new Color(value);
+}
+
+int getSeason(DateTime now){
+  var season = (now.month) ~/ 3;
+  if(season == 0)
+    season = 4;
+  return season;
+}

@@ -23,10 +23,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<Color> seasonColors = [codeToColor("C273A5"),codeToColor("4AC500"),codeToColor("720000"),codeToColor("D0D0D0"), ];
   double sliderValue = 100;
   List beforeTree = [];
-  double _sliderValue = 100;
-  bool _isCkeck = false;
   var itemCnt = 0;
   var donePer = 0.0;
   Map<String, double> events = {};
@@ -145,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
       resizeToAvoidBottomInset: false,
       appBar:
       AppBar(
-        backgroundColor: Colors.green,
+        backgroundColor: seasonColors[getSeason(DateTime.now())],
         elevation: 0.0,
         title: Text(getNowDate(DateTime.now())),
       ),
