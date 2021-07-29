@@ -7,6 +7,7 @@ import 'package:my_app/db_helper.dart';
 import 'package:my_app/main.dart';
 import 'package:rive/rive.dart';
 
+import 'Bloc.dart';
 import 'models/todo_model.dart';
 import 'src/funtion.dart';
 
@@ -24,20 +25,22 @@ class CalendarScreen extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _CalendarScreenState(events);
+    return _CalendarScreenState(events, donePer);
   }
 }
 
 //여기서 todo data 보여줌
 class _CalendarScreenState extends State<CalendarScreen> {
   Map<String, double> _events = {};
+  double _donePer = 0;
 
   late RiveAnimationController _controller;
   Artboard? _artboard;
-  var count = 0;
+  double gotPer = 0;
 
-  _CalendarScreenState(Map<String, double> events) {
+  _CalendarScreenState(Map<String, double> events, double donePer) {
     this._events = events;
+    this._donePer = donePer;
   }
 
   @override
@@ -48,49 +51,83 @@ class _CalendarScreenState extends State<CalendarScreen> {
     _loadRiveFile();
   }
 
-  void _onSucess() {
+  void _ActiveAnimation(double? percent) {
+    debugPrint(percent.toString());
     if (_artboard != null) {
-      if (count == 1) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('FourToThree'));
-        count++;
-      } else if (count == 2) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('ThreeToTwo'));
-        count++;
-      } else if (count == 3) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('TwoToOne'));
-        count++;
-      } else if (count == 4) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('OneToTwo'));
-        count++;
-      } else if (count == 5) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('TwoToThree'));
-        count++;
-      } else if (count == 6) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('ThreeToFour'));
-        count++;
-      } else if (count == 7) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('ToFall'));
-        count++;
-      } else if (count == 8) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('ToWinter'));
-        count++;
-      } else if (count == 9) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('FallToWinter'));
-        count++;
-      } else {
-        count++;
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('MoveUp'));
+      if (percent! < 20) {
+        percent = percent - 10;
+        if (percent == 1.0) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToFourSpring'));
+        } else if (percent >= 0.75) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToThreeSpring'));
+        } else if (percent >= 0.5) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToTwoSpring'));
+        } else if (percent >= 0.25) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToOneSpring'));
+        } else {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToZeroSpring'));
+        }
+      } else if (percent < 30) {
+        percent = percent - 20;
+        if (percent == 1.0) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToFourSummer'));
+        } else if (percent >= 0.75) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToThreeSummer'));
+        } else if (percent >= 0.5) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToTwoSummer'));
+        } else if (percent >= 0.25) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToOneSummer'));
+        } else {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToZeroSummer'));
+        }
+      } else if (percent < 40) {
+        percent = percent - 30;
+        if (percent == 1.0) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToFourFall'));
+        } else if (percent >= 0.75) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToThreeFall'));
+        } else if (percent >= 0.5) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToTwoFall'));
+        } else if (percent >= 0.25) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToOneFall'));
+        } else {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToZeroFall'));
+        }
+      } else if (percent < 50) {
+        percent = percent - 40;
+        if (percent == 1.0) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToFourWinter'));
+        } else if (percent >= 0.75) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToThreeWinter'));
+        } else if (percent >= 0.5) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToTwoWinter'));
+        } else if (percent >= 0.25) {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToOneWinter'));
+        } else {
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToZeroWinter'));
+        }
       }
+
       Future.delayed(const Duration(milliseconds: 1500), () {
         _Wind();
       });
@@ -107,7 +144,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   void _loadRiveFile() async {
-    _controller = SimpleAnimation('MoveUp');
+    debugPrint(gotPer.toString());
+    if (_donePer == 1.0) {
+      _controller = SimpleAnimation('ToFourSummer');
+    } else if (_donePer >= 0.75) {
+      _controller = SimpleAnimation('ToThreeSummer');
+    } else if (_donePer >= 0.5) {
+      _controller = SimpleAnimation('ToTwoSummer');
+    } else if (_donePer >= 0.25) {
+      _controller = SimpleAnimation('ToOneSummer');
+    } else {
+      _controller = SimpleAnimation('ToZeroSummer');
+    }
   }
 
   @override
@@ -130,7 +178,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   stream: stream,
                   builder: (context, snapshot) {
                     return AnimatedOpacity(
-                      opacity: (snapshot.data != null) ? snapshot.data as double : opicty,
+                      opacity: (snapshot.data != null)
+                          ? snapshot.data as double
+                          : opicty,
                       duration: Duration(seconds: 1),
                       child: RiveAnimation.asset(
                         'assets/cloud.riv',
@@ -188,6 +238,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Future<void> _handleNewDate(date) async {
-    var gotPer = await DBHelper().getPer(getNowDate(DateTime.now()));
+    gotPer = await DBHelper().getPer(getNowDate(DateTime.now()));
   }
 }

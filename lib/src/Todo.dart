@@ -7,6 +7,7 @@ import 'package:rive/rive.dart';
 import 'package:transition/transition.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter/material.dart';
+import '../Bloc.dart';
 import '../calender.dart';
 import '../db_helper.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -23,6 +24,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   double sliderValue = 100;
+  List beforeTree = [];
+  double _sliderValue = 100;
+  bool _isCkeck = false;
   var itemCnt = 0;
   var donePer = 0.0;
   Map<String, double> events = {};
@@ -30,49 +34,47 @@ class _MyHomePageState extends State<MyHomePage> {
   Artboard? _artboard;
   var count = 0;
 
-  void _onSucess() {
+  void _ActiveAnimation(double? percent) {
     if (_artboard != null) {
-      if (count == 1) {
+      if(percent! == 1.0){
         _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('FourToThree'));
-        count++;
-      } else if (count == 2) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('ThreeToTwo'));
-        count++;
-      } else if (count == 3) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('TwoToOne'));
-        count++;
-      } else if (count == 4) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('OneToTwo'));
-        count++;
-      } else if (count == 5) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('TwoToThree'));
-        count++;
-      } else if (count == 6) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('ThreeToFour'));
-        count++;
-      } else if (count == 7) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('ToFall'));
-        count++;
-      } else if (count == 8) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('ToWinter'));
-        count++;
-      } else if (count == 9) {
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('FallToWinter'));
-        count++;
-      } else {
-        count++;
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('MoveUp'));
+        _artboard!.addController(SimpleAnimation('ThreeToFourSummer'));
       }
+      else if(percent >= 0.75){
+        if(beforeTree[beforeTree.length-2]<0.75){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('TwoToThreeSummer'));
+        }
+        else{
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('FourToThreeSummer'));
+        }
+      }
+      else if(percent >= 0.5){
+        if(beforeTree[beforeTree.length-2]<0.5){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('OneToTwoSummer'));
+        }
+        else{
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('ThreeToTwoSummer'));
+        }
+      }
+      else if(percent >= 0.25){
+        if(beforeTree[beforeTree.length-2]<0.25){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ZeroToOneSummer'));
+        }
+        else{
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('TwoToOneSummer'));
+        }
+      }
+      else{
+        _artboard!.artboard.removeController(_controller);
+        _artboard!.addController(SimpleAnimation('OneToZeroSummer'));
+      }
+      debugPrint("눌림");
       Future.delayed(const Duration(milliseconds: 1500), () {
         _Wind();
       });
@@ -92,10 +94,31 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _loadRiveFile();
+    beforeTree.add(0);
   }
 
   void _loadRiveFile() async {
-    _controller = SimpleAnimation('MoveUp');
+    var totalData =
+    await DBHelper().getDayTodos(getNowDate(DateTime.now()));
+    var doneData =
+    await DBHelper().getDoneTodos(getNowDate(DateTime.now()));
+    donePer = (doneData / totalData.length).toDouble();
+    debugPrint(donePer.toString());
+    if(donePer == 1.0){
+      _controller = SimpleAnimation('ToFourSummer');
+    }
+    else if(donePer >= 0.75){
+      _controller = SimpleAnimation('ToThreeSummer');
+    }
+    else if(donePer >= 0.5){
+      _controller = SimpleAnimation('ToTwoSummer');
+    }
+    else if(donePer >= 0.25){
+      _controller = SimpleAnimation('ToOneSummer');
+    }
+    else{
+      _controller = SimpleAnimation('ToZeroSummer');
+    }
   }
 
   @override
@@ -139,14 +162,21 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 Center(
                     child: GestureDetector(
-                  onTap: _onSucess,
-                  child: RiveAnimation.asset(
-                    'assets/cloud.riv',
-                    onInit: _onInit,
-                    fit: BoxFit.cover,
-                    controllers: [_controller],
-                  ),
-                )),
+                      child: StreamBuilder<double?>(
+                        stream: bloc.todayStream,
+                        builder: (context, snapshot) {
+                          if(snapshot.data != null){
+                            _ActiveAnimation(snapshot.data);
+                          }
+                          return RiveAnimation.asset(
+                            'assets/cloud.riv',
+                            onInit: _onInit,
+                            fit: BoxFit.cover,
+                            controllers: [_controller],
+                          );
+                        }
+                      ),
+                    )),
                 Positioned(
                     left: 0,
                     right: 0,
@@ -290,13 +320,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   if (todo.state == null) todo.state = 0;
                   todo.state = todo.state == 0 ? 1 : 0;
                   DBHelper().updateTodoState(todo);
-                  setState(() {
-                    _onSucess();
-                  });
+                  setState(() {                  });
 
                   var doneData =
                       await DBHelper().getDoneTodos(getNowDate(DateTime.now()));
                   donePer = (doneData / itemCnt).toDouble();
+                  beforeTree.add(donePer);
+                  bloc.changeTreeFromHeart(donePer);
                   await DBHelper().updatePer(
                       getNowDate(DateTime.now()), donePer.toDouble());
 
@@ -405,6 +435,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     final myController = TextEditingController();
+    print("dia");
     slideDialog.showSlideDialog(
         barrierColor: Colors.white.withOpacity(0.7),
         context: context,
