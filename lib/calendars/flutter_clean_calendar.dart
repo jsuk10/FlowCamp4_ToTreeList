@@ -602,8 +602,7 @@ class _CalendarState extends State<Calendar> {
       //여기서 나무 업데이트
       var date = DateFormat("yyyy.MM.dd")
           .format(DateTime.parse(_selectedDate.toString()));
-      print(date); //percent
-      print(int.parse(date[5] + date[6]));
+
       if (widget.events![date] == null) {
         if (int.parse(date[5] + date[6]) >= 3 &&
             int.parse(date[5] + date[6]) <= 5) bloc.changeTreeFromClick(10);

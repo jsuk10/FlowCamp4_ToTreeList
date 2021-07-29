@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'package:my_app/models/todo_model.dart';
 import 'package:rive/rive.dart';
 import 'package:transition/transition.dart';
@@ -91,6 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    print("INITSTATE");
     super.initState();
     _loadRiveFile();
     beforeTree.add(0);
@@ -128,9 +130,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Future<void> didChangeDependencies() async {
+    DBHelper().deleteAllPer();
     super.didChangeDependencies();
-    //await DBHelper().createPer(DateTime.now().year.toString() + (DateTime.now().month+5).toString() + (DateTime.now().day-2).toString());
-    //await DBHelper().updatePer(DateTime.now().year.toString() + (DateTime.now().month+5).toString() + (DateTime.now().day-2).toString(), 0.5);
+
+    /**var date = '2021.07.28';
+    await DBHelper().createPer(date);
+    await DBHelper().updatePer(date, 0.3);
+    date = '2021.07.27';
+    await DBHelper().createPer(date);
+    await DBHelper().updatePer(date, 0.9);
+    date = '2021.07.26';
+    await DBHelper().createPer(date);
+    await DBHelper().updatePer(date, 0.5);
+    date = '2021.07.25';
+    await DBHelper().createPer(date);
+    await DBHelper().updatePer(date, 0.4);
+    date = '2021.03.29';
+    await DBHelper().createPer(date);
+    await DBHelper().updatePer(date, 1.0);
+    date = '2021.10.29';
+    await DBHelper().createPer(date);
+    await DBHelper().updatePer(date, 0.6);
+    date = '2021.01.29';
+    await DBHelper().createPer(date);
+    await DBHelper().updatePer(date, 0.6);*/
+
     var allPer = await DBHelper().getAllPer();
     for (int i = 0; i < allPer.length; i++) {
       events[allPer[i]['date']] = allPer[i]['per'].toDouble();
