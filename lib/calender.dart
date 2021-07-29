@@ -22,19 +22,21 @@ class CalendarScreen extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _CalendarScreenState(events);
+    return _CalendarScreenState(events,donePer);
   }
 }
 
 //여기서 todo data 보여줌
 class _CalendarScreenState extends State<CalendarScreen> {
   Map<String, double> _events = {};
+  double _donePer=0;
 
   late RiveAnimationController _controller;Artboard? _artboard;
-  var count = 0;
+  double gotPer=0;
 
-  _CalendarScreenState(Map<String, double> events) {
+  _CalendarScreenState(Map<String, double> events, double donePer) {
     this._events = events;
+    this._donePer = donePer;
   }
 
   @override
@@ -46,24 +48,102 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   void _ActiveAnimation(double? percent) {
+
+    debugPrint(percent.toString());
     if (_artboard != null) {
-      if(percent! == 1.0){
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('ToFour'));
+      if(percent!<20){
+        percent = percent-10;
+        if(percent == 1.0){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToFourSpring'));
+        }
+        else if(percent >= 0.75){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToThreeSpring'));
+        }
+        else if(percent >= 0.5){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToTwoSpring'));
+        }
+        else if(percent >= 0.25){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToOneSpring'));
+        }
+        else{
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToZeroSpring'));
+        }
       }
-      else if(percent >= 0.75){
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('ToSpring'));
+      else if(percent<30){
+        percent = percent-20;
+        if(percent == 1.0){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToFourSummer'));
+        }
+        else if(percent >= 0.75){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToThreeSummer'));
+        }
+        else if(percent >= 0.5){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToTwoSummer'));
+        }
+        else if(percent >= 0.25){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToOneSummer'));
+        }
+        else{
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToZeroSummer'));
+        }
       }
-      else if(percent >= 0.5){
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('ToTwo'));
+      else if(percent<40){
+        percent = percent-30;
+        if(percent == 1.0){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToFourFall'));
+        }
+        else if(percent >= 0.75){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToThreeFall'));
+        }
+        else if(percent >= 0.5){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToTwoFall'));
+        }
+        else if(percent >= 0.25){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToOneFall'));
+        }
+        else{
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToZeroFall'));
+        }
       }
-      else if(percent >= 0.25){
-        _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('ToOne'));
+      else if(percent<50){
+        percent = percent-40;
+        if(percent == 1.0){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToFourWinter'));
+        }
+        else if(percent >= 0.75){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToThreeWinter'));
+        }
+        else if(percent >= 0.5){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToTwoWinter'));
+        }
+        else if(percent >= 0.25){
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToOneWinter'));
+        }
+        else{
+          _artboard!.artboard.removeController(_controller);
+          _artboard!.addController(SimpleAnimation('ToZeroWinter'));
+        }
       }
-      debugPrint(percent.toString());
+
       Future.delayed(const Duration(milliseconds: 1500), () {
         _Wind();
       });
@@ -80,7 +160,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   void _loadRiveFile() async {
-    _controller = SimpleAnimation('MoveUp');
+    debugPrint(gotPer.toString());
+    if(_donePer == 1.0){
+      _controller = SimpleAnimation('ToFourSummer');
+    }
+    else if(_donePer >= 0.75){
+      _controller = SimpleAnimation('ToThreeSummer');
+    }
+    else if(_donePer >= 0.5){
+      _controller = SimpleAnimation('ToTwoSummer');
+    }
+    else if(_donePer >= 0.25){
+      _controller = SimpleAnimation('ToOneSummer');
+    }
+    else{
+      _controller = SimpleAnimation('ToZeroSummer');
+    }
+
   }
 
   @override
@@ -149,6 +245,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Future<void> _handleNewDate(date) async {
-    var gotPer = await DBHelper().getPer(getNowDate(DateTime.now()));
+    gotPer = await DBHelper().getPer(getNowDate(DateTime.now()));
   }
 }

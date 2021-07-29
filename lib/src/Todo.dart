@@ -38,41 +38,41 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_artboard != null) {
       if(percent! == 1.0){
         _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('ThreeToFour'));
+        _artboard!.addController(SimpleAnimation('ThreeToFourSummer'));
       }
       else if(percent >= 0.75){
         if(beforeTree[beforeTree.length-2]<0.75){
           _artboard!.artboard.removeController(_controller);
-          _artboard!.addController(SimpleAnimation('TwoToThree'));
+          _artboard!.addController(SimpleAnimation('TwoToThreeSummer'));
         }
         else{
           _artboard!.artboard.removeController(_controller);
-          _artboard!.addController(SimpleAnimation('FourToThree'));
+          _artboard!.addController(SimpleAnimation('FourToThreeSummer'));
         }
       }
       else if(percent >= 0.5){
         if(beforeTree[beforeTree.length-2]<0.5){
           _artboard!.artboard.removeController(_controller);
-          _artboard!.addController(SimpleAnimation('OneToTwo'));
+          _artboard!.addController(SimpleAnimation('OneToTwoSummer'));
         }
         else{
         _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('ThreeToTwo'));
+        _artboard!.addController(SimpleAnimation('ThreeToTwoSummer'));
         }
       }
       else if(percent >= 0.25){
         if(beforeTree[beforeTree.length-2]<0.25){
           _artboard!.artboard.removeController(_controller);
-          _artboard!.addController(SimpleAnimation('ZeroToOne'));
+          _artboard!.addController(SimpleAnimation('ZeroToOneSummer'));
         }
         else{
           _artboard!.artboard.removeController(_controller);
-          _artboard!.addController(SimpleAnimation('TwoToOne'));
+          _artboard!.addController(SimpleAnimation('TwoToOneSummer'));
         }
       }
       else{
         _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('OneToZero'));
+        _artboard!.addController(SimpleAnimation('OneToZeroSummer'));
       }
       debugPrint("눌림");
       Future.delayed(const Duration(milliseconds: 1500), () {
@@ -98,7 +98,27 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _loadRiveFile() async {
-    _controller = SimpleAnimation('MoveUp');
+    var totalData =
+    await DBHelper().getDayTodos(getNowDate(DateTime.now()));
+    var doneData =
+    await DBHelper().getDoneTodos(getNowDate(DateTime.now()));
+    donePer = (doneData / totalData.length).toDouble();
+    debugPrint(donePer.toString());
+    if(donePer == 1.0){
+      _controller = SimpleAnimation('ToFourSummer');
+    }
+    else if(donePer >= 0.75){
+      _controller = SimpleAnimation('ToThreeSummer');
+    }
+    else if(donePer >= 0.5){
+      _controller = SimpleAnimation('ToTwoSummer');
+    }
+    else if(donePer >= 0.25){
+      _controller = SimpleAnimation('ToOneSummer');
+    }
+    else{
+      _controller = SimpleAnimation('ToZeroSummer');
+    }
   }
 
   @override
