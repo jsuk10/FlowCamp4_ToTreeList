@@ -140,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green,
+      backgroundColor: Color.fromRGBO(147,215,255, 1),
       resizeToAvoidBottomInset: false,
       appBar:
       AppBar(
