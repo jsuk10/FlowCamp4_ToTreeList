@@ -53,7 +53,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       }
       else if(percent >= 0.75){
         _artboard!.artboard.removeController(_controller);
-        _artboard!.addController(SimpleAnimation('ToThree'));
+        _artboard!.addController(SimpleAnimation('ToSpring'));
       }
       else if(percent >= 0.5){
         _artboard!.artboard.removeController(_controller);
@@ -63,7 +63,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         _artboard!.artboard.removeController(_controller);
         _artboard!.addController(SimpleAnimation('ToOne'));
       }
-      debugPrint("눌림");
+      debugPrint(percent.toString());
       Future.delayed(const Duration(milliseconds: 1500), () {
         _Wind();
       });
@@ -104,7 +104,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ),
             body: Stack(
               children: <Widget>[
-                Center(
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: 60,
+                  bottom: 0,
                   child: GestureDetector(
                     child: RiveAnimation.asset(
                       'assets/cloud.riv',
