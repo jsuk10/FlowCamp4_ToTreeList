@@ -120,7 +120,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       backgroundColor: Colors.green,
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
+      appBar:
+      AppBar(
+        backgroundColor: Colors.green,
+        elevation: 0.0,
         title: Text(getNowDate(DateTime.now())),
       ),
       body: FutureBuilder(
