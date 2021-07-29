@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:my_app/calendars/flutter_clean_calendar.dart';
 import 'package:my_app/calendars/clean_calendar_event.dart';
@@ -9,10 +11,11 @@ import 'models/todo_model.dart';
 import 'src/funtion.dart';
 
 class CalendarScreen extends StatefulWidget {
-  CalendarScreen({Key? key,
-    required this.title,
-    required this.donePer,
-    required this.events})
+  CalendarScreen(
+      {Key? key,
+      required this.title,
+      required this.donePer,
+      required this.events})
       : super(key: key);
 
   final String title;
@@ -115,62 +118,73 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double opicty = 0.8;
+    var controller = StreamController<double>();
+    Stream<double> stream = controller.stream;
+
     return Scaffold(
-        // appBar: AppBar(
-        //   // centerTitle: true,
-        //   title: Text("Route Transition Example"),
-        // ),
-        body: Stack(
-          children: <Widget>[
-            Center(
-              child: RiveAnimation.asset(
-                'assets/cloud.riv',
-                onInit: _onInit,
-                fit: BoxFit.cover,
-                controllers: [_controller],
-              ),
+      body: Stack(
+        children: <Widget>[
+          Center(
+              child: new StreamBuilder(
+                  stream: stream,
+                  builder: (context, snapshot) {
+                    return AnimatedOpacity(
+                      opacity: (snapshot.data != null) ? snapshot.data as double : opicty,
+                      duration: Duration(seconds: 1),
+                      child: RiveAnimation.asset(
+                        'assets/cloud.riv',
+                        onInit: _onInit,
+                        fit: BoxFit.cover,
+                        controllers: [_controller],
+                      ),
+                    );
+                  })),
+          SafeArea(
+            child: Calendar(
+              startOnMonday: true,
+              onExpandStateChanged: (value) {
+                opicty = value ? 0.5 : 0.8;
+                controller.add(opicty);
+                setState(() {});
+              },
+              weekDays: ['mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
+              events: _events,
+              isExpandable: true,
+              eventDoneColor: Colors.green,
+              selectedColor: Colors.pink,
+              todayColor: Colors.blue,
+              eventColor: Colors.grey,
+              locale: 'ko',
+              isExpanded: false,
+              expandableDateFormat: 'EEEE, dd. MMMM yyyy',
+              dayOfWeekStyle: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 11),
             ),
-            SafeArea(
-              child: Calendar(
-                startOnMonday: true,
-                weekDays: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
-                events: _events,
-                isExpandable: true,
-                eventDoneColor: Colors.green,
-                selectedColor: Colors.pink,
-                todayColor: Colors.blue,
-                eventColor: Colors.grey,
-                locale: 'ko',
-                isExpanded: true,
-                expandableDateFormat: 'EEEE, dd. MMMM yyyy',
-                dayOfWeekStyle: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 11),
+          ),
+        ],
+      ),
+      bottomNavigationBar: new BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        color: Color.fromRGBO(104, 65, 50, 1),
+        child: new Row(
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.add,
+                color: Colors.white,
               ),
-            )
-          ],
-        ),
-        bottomNavigationBar:new BottomAppBar(
-          shape: CircularNotchedRectangle(),
-          color: Color.fromRGBO(104, 65, 50, 1),
-          child: new Row(
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Icons.add,
-                  color: Colors.white,
-                ), onPressed: () {
+              onPressed: () {
                 Navigator.pop(context);
               },
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
     );
-
-
   }
 
   Future<void> _handleNewDate(date) async {
